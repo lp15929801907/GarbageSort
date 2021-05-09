@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+</head>
+<body>
+{% if status == 0 %}
+    <script>
+    alert("未找到该垃圾回收点！！！")
+    </script>
+{% elif status == 1 %}
+    <script>
+    alert("未找到该类型的垃圾桶！！！")
+    </script>
+{% endif %}
+<!--头部-->
+<header class="publicHeader">
+    <h1>垃圾分类系统</h1>
+
+    <div class="publicHeaderR">
+        <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span> , 欢迎你！</p>
+        <a href="/login?">退出</a>
+    </div>
+</header>
+<!--时间-->
+<section class="publicTime">
+    <span id="time">2015年1月1日 11:11  星期一</span>
+    <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+</section>
+<!--主体内容-->
+<section class="publicMian ">
+    <div class="left">
+        <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+        <nav>
+            <ul class="list">
+                <li><a href="/common_information?">查看个人信息</a></li>
+                <li><a href="/search_dump?">查看垃圾桶</a></li>
+                <li><a href="/throw_record?">投放垃圾记录</a></li>
+                <li><a href="/change_password?">密码修改</a></li>
+                <li><a href="/login?">退出系统</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="right">
+        <div class="location">
+            <strong>你现在所在的位置是:</strong>
+            <span>查看垃圾桶页面</span>
+        </div>
+    <form>
+    {% csrf_token %}
+        <div class="search">
+                <span>垃圾回收点：</span>
+                <select name="dump_place"id="dump_place">
+                        <option value="">--请选择--</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+                        </select>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+                <span>垃圾桶类型：</span>
+                <select name="type_id" >
+                    <option value="0">--请选择--</option>
+                    {% for type in types %}
+                        <option value="{{type.type_id}}">{{type.type_name}}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" value="查询"formaction="/search_dump/"formmethod="post"
+                style="width: 70px;height: 37px;position: absolute;left: 760px;top: 116px;"/><!--点击查询按钮后提交到search_dump函数的post部分执行 -->
+            </div>
+    </form>
+    <script>
+        function fun(rest)
+        {
+            if (rest)
+                alert("投放垃圾成功，获得1积分！")
+            else
+                alert("抱歉该垃圾桶已满，无法投放！")
+        }
+    </script>
+    <div style="overflow: scroll;height: 560px;width: 1255px;">
+        <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1150px;left: 0px;">
+            <tr class="firstTr">
+                <th>垃圾桶编号</th>
+                <th>垃圾桶名称</th>
+                <th>垃圾桶总投放次数</th>
+                <th>可投放次数</th>
+                <th>垃圾桶类型</th>
+                <th>所属垃圾回收点</th>
+                <th>操作</th>
+            </tr>
+            {% for dump in dumps %}
+                <tr>
+                    <td>{{ dump.dump_id }}</td>
+                    <td>{{ dump.dump_name }}</td>
+                    <td>{{ dump.dump_number }}</td>
+                    <td>{{ dump.dump_rest }}</td>
+                    <td>{{ dump.dump_type.type_name }}</td><!--因为垃圾桶类型是dump表的外键，所以需要二级引用-->
+                    <td>{{ dump.dump_place }}</td>
+                <td>
+                    <a href="/throw_dump?dump_dump_id={{ dump.dump_id }}"onclick="fun({{ dump.dump_rest }})"><img src="../../static/img/zd.png" alt="投放垃圾" title="投放垃圾"/></a>
+                </td>
+                </tr>
+            {% endfor %}
+        </table>
+</div>
+    </div>
+</section>
+<footer class="footer">
+</footer>
+
+<script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/js.js"></script>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+</head>
+<body>
+<!--头部-->
+    <header class="publicHeader">
+        <h1>垃圾分类系统</h1>
+        <div class="publicHeaderR">
+            <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span>管理员 , 欢迎你！</p>
+            <a href="/login?">退出</a>
+        </div>
+    </header>
+<!--时间-->
+
+    <section class="publicTime">
+        <span id="time"></span>
+        <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+    </section>
+<!--主体内容-->
+    <section class="publicMian ">
+        <div class="left">
+            <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+            <nav>
+                <ul class="list">
+                    <li ><a href="/manager_information?">查看个人信息</a></li>
+                    <li><a href="/manage_dump?">管理垃圾桶</a></li>
+                    <li><a href="/add_new_dump?">添加垃圾桶</a></li>
+                    <li><a href="/search_common?">查看投放记录</a></li>
+                    <li><a href="/change_manager_password?">密码修改</a></li>
+                </ul>
+            </nav>
+        </div>
+    <script>
+        function fun() {
+            var dump_id = document.getElementById("dump_id").value
+            var dump_name = document.getElementById("dump_name").value
+            var type_name = document.getElementById("type_name").value
+            var dump_place=document.getElementById("dump_place").value
+            var dump_number=document.getElementById("dump_number").value
+            var dump_rest=document.getElementById("dump_rest").value
+            var a = /^\d+$/.test(dump_number);
+            var b = /^\d+$/.test(dump_rest);
+            if(dump_id==''||dump_name==''||type_name==''||dump_number==''||dump_rest==''|| dump_place=='')
+                ;
+            else
+                if(a && b)
+                    alert("修改成功！")
+                else
+                    alert("垃圾桶总投放次数和可投放次数中输入的不是数字，请重新修改垃圾桶信息！")
+        }
+    </script>
+        <div class="right">
+            <div class="location">
+                <strong>你现在所在的位置是:</strong>
+                <span>修改垃圾桶信息页面</span>
+            </div>
+            <div class="providerAdd">
+                <form action="/alter_dump/"method="post">
+                    {% csrf_token %}
+                    <div>
+                        <label >垃圾桶编号：</label>
+                        <input type="text" name="dump_id"value="{{ dump_id }}"id="dump_id" required readonly/>
+                        <label >垃圾桶类型：</label>
+                        <select name="type_name"id="type_name">
+                            <option value="{{ type_name }}">{{ type_name }}</option>
+                         {% for type in types %}
+                            <option value="{{type.type_name}}">{{ type.type_name}}</option>
+                         {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label >垃圾桶名称：</label>
+                        <input type="text"name="dump_name"value="{{ dump_name }}" id="dump_name" required/>
+                        <label >所属垃圾回收点：</label>
+                        <select name="dump_place"id="dump_place" required>
+                        <option value="{{ dump_place }}">{{ dump_place }}</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label >垃圾桶总投放次数：</label>
+                        <input type="text" name="dump_number"id="dump_number" value="{{ dump_number }}"required/>
+                        <label >可投放次数：</label>
+                        <input type="text"name="dump_rest" value="{{ dump_rest }}"id="dump_rest" required/>
+                    </div>
+                    <div class="providerAddBtn">
+                        <input type="submit"value="确&nbsp;认"onclick="fun()" style=" width: 88px;
+    height: 42px;
+    position: absolute;
+    left: 745px;
+    top: 383px;
+    font-size: 20px;">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+<script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/js.js"></script>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>
+
+

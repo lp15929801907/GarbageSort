@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+</head>
+<body>
+<!--头部-->
+    <header class="publicHeader">
+        <h1>垃圾分类系统</h1>
+        <div class="publicHeaderR">
+            <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span>管理员 , 欢迎你！</p>
+            <a href="/login?">退出</a>
+        </div>
+    </header>
+<!--时间-->
+
+    <section class="publicTime">
+        <span id="time"></span>
+        <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+    </section>
+<!--主体内容-->
+    <section class="publicMian ">
+        <div class="left">
+            <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+            <nav>
+                <ul class="list">
+                    <li ><a href="/manager_information?">查看个人信息</a></li>
+                    <li><a href="/manage_dump?">管理垃圾桶</a></li>
+                    <li><a href="/add_new_dump?">添加垃圾桶</a></li>
+                    <li><a href="/search_common?">查看投放记录</a></li>
+                    <li><a href="/change_manager_password?">密码修改</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="right">
+            <div class="location">
+                <strong>你现在所在的位置是:</strong>
+                <span>投放垃圾记录页面</span>
+            </div>
+            <div style="overflow: scroll;height: 604px;">
+            <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1113px;left: 100px;margin-left: -94px;">
+            <tr class="firstTr">
+                <th style="width: 70px;">用户昵称</th>
+                <th style="width: 70px;">用户手机号</th>
+                <th style="width: 70px;">垃圾桶编号</th>
+                <th style="width: 70px;">所属垃圾回收点</th>
+                <th style="width: 70px;">垃圾桶类型</th>
+                <th style="width: 70px;">投放时间</th>
+                <th style="width: 70px;">操作</th>
+            </tr>
+                {% for record in records %}
+                    <tr>
+                   <td>{{ record.common_id }}</td>
+                    <td>{{ record.common_tel }}</td>
+                    <td>{{ record.dump_id }}</td>
+                    <td>{{ record.dump_place }}</td>
+                    <td>{{ record.dump_type.type_name }}</td>
+                    <td>{{ record.throw_time }}</td>
+                <td>
+                    <a href="/return_dump?throw_id={{ record.id }}"onclick="alert('清理垃圾成功！')"><img src="../../static/img/schu.png" alt="清理垃圾" title="清理垃圾"/></a>
+                </td>
+                </tr>
+                {% endfor %}
+        </table>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    </footer>
+
+<script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/js.js"></script>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>

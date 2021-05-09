@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>欢迎来到垃圾分类系统登录界面</title>
+<!-- For-Mobile-Apps-and-Meta-Tags -->
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="keywords" content="" />
+	<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //For-Mobile-Apps-and-Meta-Tags -->
+
+<link href="../static/css/style1.css" type="text/css" rel="stylesheet" media="all">
+<link href="../static/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<style>
+    .p_one{
+        color: #4fff24;
+        position: relative;
+        left: 636px;
+        top: 69px;
+        font-size: 23px;
+        font-family: monospace;
+    }
+</style>
+</head>
+
+<body>
+
+<section>
+{% if status == 0 %}
+    <p class="p_one"> {{ info }} </p>
+{% elif status == 1 %}
+    <p class="p_one"> {{ info }} </p>
+{% elif status == 2 %}
+    <p class="p_one"> {{ info }} </p>
+{% elif status == 3 %}
+    <p class="p_one"> {{ info }} </p>
+{% elif status == 4 %}
+    <p class="p_one"> {{ info }} </p>
+{% elif status == 5 %}
+    <p class="p_one"> {{ info }} </p>
+{% endif %}
+  <div class="stage">
+   <h1>欢迎来到垃圾分类系统</h1>
+    <div class="cbImage w3">
+		<h3>用户注册</h3>
+		<form action="/common_register/" method="post">
+            {% csrf_token %}
+			<input type="text"  name="common_name" placeholder="姓名" required>
+			<input type="text"  name="common_id" placeholder="昵称" required>
+            <select name="common_address" required>
+                <option value="0">--请选择你的地区--</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+            </select>
+            <input type="text"  name="common_email" placeholder="邮箱" required>
+            <input type="text"  name="common_telephone" placeholder="电话" required>
+            <input type="password"  name="common_password" placeholder="密码" required>
+
+			<input type="submit" class="" value="注册"style="position: relative;top: 15px;left: 11px;">
+		</form>
+	</div>
+
+
+    <div class="cbImage active signin agileits">
+		<h3>登录</h3>
+		<form action="/login_judge/" method="post"><!--提交到login_judge登录判定函数-->
+            {% csrf_token %}
+			<input type="text" name="telephone" class="name" placeholder="手机号" required>
+			<input type="password" name="password" class="password" placeholder="密码" required>
+			<input type="submit" value="登录"style="position: relative;top: 47px;left: 11px;">
+		</form>
+	</div>
+
+    <div class="cbImage agileinfo providerAdd">
+		<h3>管理员注册</h3>
+		<form action="/manager_register/" method="post">
+            {% csrf_token %}
+			<input type="text"  name="manager_name" placeholder="姓名" required>
+			<input type="text"  name="manager_id" placeholder="昵称" required=>
+            <select name="manager_stack" required>
+                <option value="0">--请选择管理的垃圾回收点--</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+            </select>
+            <input type="text"  name="manager_email" placeholder="邮箱" required="">
+            <input type="text"  name="manager_telephone" placeholder="电话" required="">
+            <input type="password"  name="manager_password" placeholder="密码" required="">
+			<input type="submit" value="注册"style="position: relative;top: 10px;left: 11px;">
+		</form>
+	</div>
+    <div class="clear"></div>
+  </div>
+  
+</section>
+<script src="../static/js/jquery-2.1.4.min.js"></script>
+<script src="../static/js/coverflow-slideshow.js"></script>
+
+</body>
+</html>
