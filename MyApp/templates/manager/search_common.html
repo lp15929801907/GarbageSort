@@ -7,6 +7,23 @@
     <link rel="stylesheet" href="../../static/css/style.css"/>
 </head>
 <body>
+{% if status == 0 %}
+    <script>
+    alert("未找到该垃圾回收点的投放记录！！！")
+    </script>
+{% elif status == 1 %}
+    <script>
+    alert("未找到投放该类型垃圾的记录！！！")
+    </script>
+{% elif status == 2 %}
+    <script>
+    alert("未找到该垃圾回收点中投放该类型垃圾的记录！！！")
+    </script>
+{% elif status == 3 %}
+    <script>
+    alert("请选择查询投放记录的条件！！！")
+    </script>
+{% endif %}
 <!--头部-->
     <header class="publicHeader">
         <h1>垃圾分类系统</h1>
@@ -19,7 +36,7 @@
 
     <section class="publicTime">
         <span id="time"></span>
-        <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
     </section>
 <!--主体内容-->
     <section class="publicMian ">
@@ -28,8 +45,8 @@
             <nav>
                 <ul class="list">
                     <li ><a href="/manager_information?">查看个人信息</a></li>
-                    <li><a href="/manage_dump?">管理垃圾桶</a></li>
-                    <li><a href="/add_new_dump?">添加垃圾桶</a></li>
+                    <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                    <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
                     <li><a href="/search_common?">查看投放记录</a></li>
                     <li><a href="/change_manager_password?">密码修改</a></li>
                 </ul>
@@ -40,27 +57,59 @@
                 <strong>你现在所在的位置是:</strong>
                 <span>投放垃圾记录页面</span>
             </div>
+        <form>
+        {% csrf_token %}
+        <div class="search">
+                <span>垃圾回收点：</span>
+                <select name="dump_place"id="dump_place">
+                        <option value="">--请选择--</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+                        </select>
+                <span>投放垃圾类型：</span>
+                <select name="type_id"id="type_id">
+                    <option value="">--请选择--</option>
+                    <option value="A">厨余垃圾</option>
+                    <option value="B">可回收垃圾</option>
+                    <option value="C">有害垃圾</option>
+                    <option value="D">其他垃圾</option>
+                </select>
+                <input type="submit" value="查询"formaction="/search_common/"formmethod="post"
+                style="width: 70px;height: 37px;position: absolute;left: 760px;top: 116px;"/><!--点击查询按钮后提交到search_common函数的post部分执行 -->
+            </div>
+    </form>
             <div style="overflow: scroll;height: 604px;">
             <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1113px;left: 100px;margin-left: -94px;">
             <tr class="firstTr">
                 <th style="width: 70px;">用户昵称</th>
                 <th style="width: 70px;">用户手机号</th>
-                <th style="width: 70px;">垃圾桶编号</th>
-                <th style="width: 70px;">所属垃圾回收点</th>
+                <th style="width: 70px;">垃圾回收点编号</th>
+                <th style="width: 70px;">垃圾回收点</th>
                 <th style="width: 70px;">垃圾桶类型</th>
                 <th style="width: 70px;">投放时间</th>
                 <th style="width: 70px;">操作</th>
             </tr>
                 {% for record in records %}
                     <tr>
-                   <td>{{ record.common_id }}</td>
+                    <td>{{ record.common_id }}</td>
                     <td>{{ record.common_tel }}</td>
                     <td>{{ record.dump_id }}</td>
                     <td>{{ record.dump_place }}</td>
                     <td>{{ record.dump_type.type_name }}</td>
                     <td>{{ record.throw_time }}</td>
                 <td>
-                    <a href="/return_dump?throw_id={{ record.id }}"onclick="alert('清理垃圾成功！')"><img src="../../static/img/schu.png" alt="清理垃圾" title="清理垃圾"/></a>
+                    <a href="/delete_record?throw_id={{ record.id }}"onclick="alert('删除记录成功！')"><img src="../../static/img/schu.png" alt="删除记录" title="删除记录"/></a>
                 </td>
                 </tr>
                 {% endfor %}

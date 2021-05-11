@@ -49,7 +49,7 @@
 			<input type="text"  name="common_name" placeholder="姓名" required>
 			<input type="text"  name="common_id" placeholder="昵称" required>
             <select name="common_address" required>
-                <option value="0">--请选择你的地区--</option>
+                <option value="">--请选择你的地区--</option>
                         <option value="长安区">长安区</option>
                         <option value="碑林区">碑林区</option>
                         <option value="雁塔区">雁塔区</option>
@@ -89,22 +89,6 @@
             {% csrf_token %}
 			<input type="text"  name="manager_name" placeholder="姓名" required>
 			<input type="text"  name="manager_id" placeholder="昵称" required=>
-            <select name="manager_stack" required>
-                <option value="0">--请选择管理的垃圾回收点--</option>
-                        <option value="长安区">长安区</option>
-                        <option value="碑林区">碑林区</option>
-                        <option value="雁塔区">雁塔区</option>
-                        <option value="高新区">高新区</option>
-                        <option value="莲湖区">莲湖区</option>
-                        <option value="未央区">未央区</option>
-                        <option value="灞桥区">灞桥区</option>
-                        <option value="新城区">新城区</option>
-                        <option value="临潼区">临潼区</option>
-                        <option value="高陵区">高陵区</option>
-                        <option value="阎良区">阎良区</option>
-                        <option value="鄠邑区">鄠邑区</option>
-                        <option value="西咸新区">西咸新区</option>
-            </select>
             <input type="text"  name="manager_email" placeholder="邮箱" required="">
             <input type="text"  name="manager_telephone" placeholder="电话" required="">
             <input type="password"  name="manager_password" placeholder="密码" required="">

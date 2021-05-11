@@ -38,7 +38,6 @@ def common_register(request):
 def manager_register(request):
     name = request.POST.get("manager_name")  # 获取管理员输入的姓名
     id = request.POST.get("manager_id")  # 获取管理员输入的昵称
-    stack = request.POST.get("manager_stack")  # 获取管理员输入的垃圾分类点
     email = request.POST.get("manager_email")  # 获取管理员输入的邮箱
     telephone = request.POST.get("manager_telephone")  # 获取管理员输入的手机号
     password = request.POST.get("manager_password")  # 获取管理员输入的密码
@@ -56,7 +55,7 @@ def manager_register(request):
             return render(request, 'login.html', context=context)
         else:
             User.objects.create(account=telephone, user_password=password, user_identity='管理员')  # 用create为user表添加一条记录
-            Manager.objects.create(manager_name=name, manager_id=id, manager_stack=stack, manager_tel=telephone, manager_email=email)  # 用create为manager表添加一条记录
+            Manager.objects.create(manager_name=name, manager_id=id, manager_tel=telephone, manager_email=email)  # 用create为manager表添加一条记录
             context["info"] = "注册成功！"
             context["status"] = 1  # 1表示注册成功
             return render(request, 'login.html', context=context)
@@ -88,7 +87,6 @@ def login_judge(request):
                 context = {
                     "name": result2[0].manager_name,
                     "id": result2[0].manager_id,
-                    "stack": result2[0].manager_stack,
                     "telephone": result2[0].manager_tel,
                     "email": result2[0].manager_email,
                 }
@@ -134,55 +132,88 @@ def common_information(request):
             "integral": result[0].common_integral,
         }
         return render(request, 'common/common_information.html', context)  # 将该用户的个人信息再次传到前端页面
-# 查找垃圾桶
+# 查找垃圾回收点
 def search_dump(request):
-    if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“查找垃圾桶”选项时，都要显示出所有垃圾桶信息
+    if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“查找垃圾回收点”选项时，都要显示出所有垃圾回收点信息
         dumps = Dump.objects.all()
         types = Type.objects.all()
-        return render(request, 'common/search_dump.html', context={"dumps": dumps, "types": types, "name": global_cname})  # 向前端传递所有查找到的垃圾桶信息的集合
-    else:  # common/search_dump.html页面的第56行中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+        return render(request, 'common/search_dump.html', context={"dumps": dumps, "types": types, "name": global_cname})  # 向前端传递所有查找到的垃圾回收点信息的集合
+    else:  # common/search_dump.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
         dump_place = request.POST.get("dump_place")
         type_id = request.POST.get("type_id")
         types = Type.objects.all()
-        if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
-            dump_result = Dump.objects.filter(dump_place=dump_place)
-            if dump_result:  # 如果找到的结果集非空，则输出
-                return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
-            else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
-                dump_result = Dump.objects.all()
-                return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 0})
-        else:
-            if type_id:  # 如果获取的类型输入框内容不为空，则按类型查找
-                dump_result = Dump.objects.filter(dump_type=type_id)
+        if dump_place or type_id:  # 两者中至少有一个不为空
+            if dump_place and type_id:  # 两者都不为空
+                dump_result = Dump.objects.filter(dump_place=dump_place, dump_type=type_id)
                 if dump_result:  # 如果找到的结果集非空，则输出
                     return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
-                else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
+                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
                     dump_result = Dump.objects.all()
-                    return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 1})
-            else:  # 都为空，则显示空列表
-                return render(request, 'common/search_dump.html')
+                    return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 2})
+            else:  # 两者中一个不为空
+                if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
+                    dump_result = Dump.objects.filter(dump_place=dump_place)
+                    if dump_result:  # 如果找到的结果集非空，则输出
+                        return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                        dump_result = Dump.objects.all()
+                        return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 0})
+                else:  # 如果获取的类型输入框内容不为空，则按类型查找
+                    dump_result = Dump.objects.filter(dump_type=type_id)
+                    if dump_result:  # 如果找到的结果集非空，则输出
+                        return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
+                        dump_result = Dump.objects.all()
+                        return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 1})
+        else:  # 两者都为空，则显示空列表
+            dump_result = Dump.objects.all()
+            return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 3})
 # 投放垃圾
 def throw_dump(request):
     dump_id = request.GET.get("dump_dump_id")
     result = Dump.objects.filter(dump_id=dump_id).first()
     dumps = Dump.objects.all()
     types = Type.objects.all()
-    if result.dump_rest:  # 如果可投放次数不为0，则进行dump_rest--
-        rest = result.dump_rest-1
-        Dump.objects.filter(dump_id=dump_id).update(dump_rest=rest)  # 更新dump数据
-        now_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")  # 获取当前投放垃圾的系统时间
-        common = Common.objects.filter(common_tel=account).first()
-        integral = common.common_integral + 1  # 每投放一次，获得1积分
-        Common.objects.filter(common_tel=account).update(common_integral=integral)  # 更新common数据
-        Throw.objects.create(common_id=common.common_id, common_tel=account, dump_id=result.dump_id, dump_place=result.dump_place, dump_type=result.dump_type, throw_time=now_time)
-        return render(request, 'common/search_dump.html', context={"dumps": dumps, "types": types, "name": global_cname})  # 向前端传递所有查找到的垃圾桶信息的集合
-    else:  # 可投放次数为0，则不予投放
-        return render(request, 'common/search_dump.html', context={"dumps": dumps, "types": types, "name": global_cname})  # 向前端传递所有查找到的垃圾桶信息的集合
-# 投放记录
+    now_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")  # 获取当前投放垃圾的系统时间
+    common = Common.objects.filter(common_tel=account).first()
+    integral = common.common_integral + 1  # 每投放一次，获得1积分
+    Common.objects.filter(common_tel=account).update(common_integral=integral)  # 更新common数据
+    Throw.objects.create(common_id=common.common_id, common_tel=account, dump_id=result.dump_id, dump_place=result.dump_place, dump_type=result.dump_type, throw_time=now_time)
+    return render(request, 'common/search_dump.html', context={"dumps": dumps, "types": types, "name": global_cname})  # 向前端传递所有查找到的垃圾回收点信息的集合
+# 查看个人投放记录
 def throw_record(request):
-    if request.method == "GET":
+    if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“查找个人投放记录”选项时，都要显示出所有投放记录信息
         records = Throw.objects.filter(common_tel=account)  # 把当前用户的投放记录搜索出来
         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
+    else:  # common/throw_record.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+        dump_place = request.POST.get("dump_place")
+        type_id = request.POST.get("type_id")
+        if dump_place or type_id:  # 两者中至少有一个不为空
+            if dump_place and type_id:  # 两者都不为空
+                records = Throw.objects.filter(common_tel=account, dump_place=dump_place, dump_type=type_id)
+                if records:  # 如果找到的结果集非空，则输出
+                    return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
+                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
+                    records = Throw.objects.filter(common_tel=account)
+                    return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 2})
+            else:  # 两者中一个不为空
+                if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
+                    records = Throw.objects.filter(common_tel=account, dump_place=dump_place)
+                    if records:  # 如果找到的结果集非空，则输出
+                        return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                        records = Throw.objects.filter(common_tel=account)
+                        return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 0})
+                else:  # 如果获取的类型输入框内容不为空，则按类型查找
+                    records = Throw.objects.filter(common_tel=account, dump_type=type_id)
+                    if records:  # 如果找到的结果集非空，则输出
+                        return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
+                        records = Throw.objects.filter(common_tel=account)
+                        return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 1})
+        else:  # 两者都为空，则显示空列表
+            records = Throw.objects.filter(common_tel=account)
+            return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 3})
 # 修改密码
 def change_password(request):
     result = User.objects.filter(account=account).first()
@@ -205,136 +236,204 @@ def manager_information(request):
         context = {
             "name": result[0].manager_name,
             "id": result[0].manager_id,
-            "stack": result[0].manager_stack,
             "telephone": result[0].manager_tel,
             "email": result[0].manager_email,
         }
         return render(request, 'manager/manager_information.html', context)  # 将该管理员的个人信息再次传到前端页面
     else:  # 在manager_information.html页面的第44行中通过post方式的“保存”按钮跳转到此处，即完成更新数据操作（保存）
         id = request.POST.get("id")  # 获取昵称
-        stack = request.POST.get("stack")  # 获取垃圾桶信息
         email = request.POST.get("email")  # 获取邮箱
-        Manager.objects.filter(manager_tel=account).update(manager_id=id, manager_email=email, manager_stack=stack)  # 更新数据
+        Manager.objects.filter(manager_tel=account).update(manager_id=id, manager_email=email)  # 更新数据
         result = Manager.objects.filter(manager_tel=account)  # account为全局变量   此处再次传值到前端
         context = {
             "name": result[0].manager_name,
             "id": result[0].manager_id,
-            "stack": result[0].manager_stack,
             "telephone": result[0].manager_tel,
             "email": result[0].manager_email,
         }
         return render(request, 'manager/manager_information.html', context)  # 将该管理员的个人信息再次传到前端页面
-# 管理垃圾桶
+# 管理垃圾回收点
 def manage_dump(request):
-    if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“管理垃圾桶”选项时，都要显示出所有垃圾桶资料
+    if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“管理垃圾回收点”选项时，都要显示出所有垃圾回收点资料
         dumps = Dump.objects.all()
         types = Type.objects.all()
-        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾桶信息的集合
+        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾回收点信息的集合
     else:  # 在manager/manage_bok.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
         dump_place = request.POST.get("dump_place")
         type_id = request.POST.get("type_id")
         types = Type.objects.all()
-        if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
-            dump_result = Dump.objects.filter(dump_place=dump_place)
-            if dump_result:  # 如果找到的结果集非空，则输出
-                return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
-            else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
-                dump_result = Dump.objects.all()
-                return render(request, 'manager/manage_dump.html',
-                              context={"dumps": dump_result, "types": types, "name": global_mname, "status": 0})
-        else:
-            if type_id:  # 如果获取的类型输入框内容不为空，则按类型查找
-                dump_result = Dump.objects.filter(dump_type=type_id)
+        if dump_place or type_id:  # 两者中至少有一个不为空
+            if dump_place and type_id:  # 两者都不为空
+                dump_result = Dump.objects.filter(dump_place=dump_place, dump_type=type_id)
                 if dump_result:  # 如果找到的结果集非空，则输出
-                    return render(request, 'manager/manage_dump.html',
-                                  context={"dumps": dump_result, "types": types, "name": global_mname})
-                else:  # 若搜索的结果集为0，那么输出未找到类型的垃圾桶！
+                    return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
+                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
                     dump_result = Dump.objects.all()
-                    return render(request, 'manager/manage_dump.html',
-                                  context={"dumps": dump_result, "types": types, "name": global_mname, "status": 1})
-            else:  # 都为空，则显示空列表
-                return render(request, 'manager/manage_dump.html')
-# 增加垃圾桶的可投放次数
+                    return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 2})
+            else:  # 两者中一个不为空
+                if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
+                    dump_result = Dump.objects.filter(dump_place=dump_place)
+                    if dump_result:  # 如果找到的结果集非空，则输出
+                        return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                        dump_result = Dump.objects.all()
+                        return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 0})
+                else:  # 如果获取的类型输入框内容不为空，则按类型查找
+                    dump_result = Dump.objects.filter(dump_type=type_id)
+                    if dump_result:  # 如果找到的结果集非空，则输出
+                        return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
+                    else:  # 若搜索的结果集为0，那么输出未找到类型的垃圾桶！
+                        dump_result = Dump.objects.all()
+                        return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 1})
+        else:  # 两者都为空，则显示空列表
+            dump_result = Dump.objects.all()
+            return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 3})
+# 增加垃圾桶的数量
 def add_dump(request):
     if request.method == "GET":
         dump_id = request.GET.get("dump_dump_id1")
         result = Dump.objects.filter(dump_id=dump_id).first()
-        number = result.dump_number+1  # 让该垃圾桶的总投放次数和可投放次数++
-        rest = result.dump_rest+1
-        Dump.objects.filter(dump_id=dump_id).update(dump_number=number, dump_rest=rest)
+        number = result.dump_number+1  # 让该垃圾桶数量++
+        Dump.objects.filter(dump_id=dump_id).update(dump_number=number)
         dumps = Dump.objects.all()
         types = Type.objects.all()
         return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾桶信息的集合
-# 减少垃圾桶的可投放次数
+# 减少垃圾桶的数量
 def reduce_dump(request):
     if request.method == "GET":
         dump_id = request.GET.get("dump_dump_id2")
         result = Dump.objects.filter(dump_id=dump_id).first()
-        number = result.dump_number-1  # 让该垃圾桶的总投放次数和可投放次数--
-        rest = result.dump_rest-1
-        Dump.objects.filter(dump_id=dump_id).update(dump_number=number, dump_rest=rest)
+        number = result.dump_number-1  # 让该垃圾回收点数量--
+        Dump.objects.filter(dump_id=dump_id).update(dump_number=number)
         dumps = Dump.objects.all()
         types = Type.objects.all()
-        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾桶信息的集合
-# 删除该垃圾桶
+        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾回收点信息的集合
+# 删除该垃圾回收点
 def delete_dump(request):
     if request.method == "GET":
         dump_id = request.GET.get("dump_id")
         Dump.objects.filter(dump_id=dump_id).delete()  # 在dump表里删除该条记录
         dumps = Dump.objects.all()
         types = Type.objects.all()
-        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾桶信息的集合
-# 修改垃圾桶详情
+        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾回收点信息的集合
+# 修改垃圾回收点详情
 def alter_dump(request):
     types = Type.objects.all()
-    if request.method == "GET":  # 此部分是当用户在manage_dump.html页面中点击修改垃圾桶时执行，目的是显示当前垃圾桶的信息
+    if request.method == "GET":  # 此部分是当用户在manage_dump.html页面中点击修改垃圾回收点时执行，目的是显示当前垃圾回收点的信息
         dump_id = request.GET.get("dump_dump_id3")
         result = Dump.objects.filter(dump_id=dump_id).first()
         context = {
             "dump_id": result.dump_id,
-            "dump_name": result.dump_name,
             "dump_number": result.dump_number,
-            "dump_rest": result.dump_rest,
             "dump_place": result.dump_place,
             "type_name": result.dump_type.type_name,
-            "name": global_cname,
+            "name": global_mname,
             "types": types
         }
-        return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾桶的所有信息
+        return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾回收点的所有信息
     else:  # 此部分是当用户在alter_dump.html页面中点击保存按钮后重新更新用户修改后的信息
         dump_id = request.POST.get("dump_id")
-        dump_name = request.POST.get("dump_name")
         dump_number = request.POST.get("dump_number")
-        dump_rest = request.POST.get("dump_rest")
         dump_place = request.POST.get("dump_place")
         type_name = request.POST.get("type_name")
-        if dump_number.isdigit() and dump_rest.isdigit():  # 判断输入的总投放次数和可投放次数是否为数字
-            type = Type.objects.filter(type_name=type_name).first()  # 垃圾桶类型是外键
-            Dump.objects.filter(dump_id=dump_id).update(dump_name=dump_name, dump_number=dump_number, dump_rest=dump_rest, dump_place=dump_place, dump_type=type)  # 在dump表里更新刚才修改的垃圾桶信息
-            context = {       # 把修改后的内容显示出来
+        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中搜索该编号的记录
+        if len(result) == 1:  # 判断该编号是否使用，如果后台存在记录，则说明使用过
+            context = {
                 "dump_id": dump_id,
-                "dump_name": dump_name,
                 "dump_number": dump_number,
-                "dump_rest": dump_rest,
                 "dump_place": dump_place,
                 "type_name": type_name,
-                "name": global_cname,
-                "types": types
+                "name": global_mname,
+                "types": types,
+                "status": 0
             }
-            return render(request, 'manager/alter_dump.html', context)  # 重新向前端传递该垃圾桶的所有信息
-        else:
-            result = Dump.objects.filter(dump_id=dump_id).first()
-            context = {
-                "dump_id": result.dump_id,
-                "dump_name": result.dump_name,
-                "dump_number": result.dump_number,
-                "dump_rest": result.dump_rest,
-                "dump_place": result.dump_place,
-                "type_name": result.dump_type.type_name,
-                "name": global_cname,
-                "types": types
-            }
-            return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾桶的所有信息
+            return render(request, 'manager/alter_dump.html', context)
+        else:  # 该编号未使用
+            if dump_number.isdigit():  # 判断输入的垃圾桶数量是否为数字
+                type = Type.objects.filter(type_name=type_name).first()  # 垃圾桶类型是外键
+                Dump.objects.filter(dump_id=dump_id).update(dump_number=dump_number, dump_place=dump_place, dump_type=type)  # 在dump表里更新刚才修改的垃圾回收点信息
+                context = {  # 把修改后的内容显示出来
+                    "dump_id": dump_id,
+                    "dump_number": dump_number,
+                    "dump_place": dump_place,
+                    "type_name": type_name,
+                    "name": global_mname,
+                    "types": types,
+                    "status": 1
+                }
+                return render(request, 'manager/alter_dump.html', context)  # 重新向前端传递该垃圾回收点的所有信息
+            else:
+                result = Dump.objects.filter(dump_id=dump_id).first()
+                context = {
+                    "dump_id": result.dump_id,
+                    "dump_number": result.dump_number,
+                    "dump_place": result.dump_place,
+                    "type_name": result.dump_type.type_name,
+                    "name": global_mname,
+                    "types": types,
+                    "status": 2
+                }
+                return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾回收点的所有信息
+# 添加新垃圾回收点
+def add_new_dump(request):
+    types = Type.objects.all()
+    if request.method == "GET":  # 此部分是当每次点击侧边导航栏的“添加垃圾回收点”选项时，显示该界面
+        return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types})
+    else:  # 此部分是在add_new_dump.html页面中点击确认按钮后完成的添加垃圾回收点操作
+        dump_id = request.POST.get("dump_id")  # 获取用户在前端输入框中的数据
+        dump_number = request.POST.get("dump_number")
+        dump_place = request.POST.get("dump_place")
+        type_name = request.POST.get("type_name")
+        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中搜索该编号的记录
+        if len(result) == 1:  # 判断该编号是否存在，如果后台存在记录，则返回相应的提示语句
+            return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types, "status": 0})
+        else:  # 该编号未使用
+            if dump_number.isdigit():  # 判断输入的垃圾桶数量是否为数字
+                type = Type.objects.filter(type_name=type_name).first()  # 垃圾桶类型是外键
+                Dump.objects.create(dump_id=dump_id, dump_number=dump_number, dump_place=dump_place, dump_type=type)  # 在dump表里添加新记录
+                return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types, "status": 1})
+            else:
+                return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types, "status": 2})
+# 查看所有投放记录
+def search_common(request):
+    if request.method == "GET":
+        records = Throw.objects.all()  # 把所有的投放记录搜索出来
+        return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})
+    else:  # manager/search_common.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+        dump_place = request.POST.get("dump_place")
+        type_id = request.POST.get("type_id")
+        if dump_place or type_id:  # 两者中至少有一个不为空
+            if dump_place and type_id:  # 两者都不为空
+                records = Throw.objects.filter(dump_place=dump_place, dump_type=type_id)
+                if records:  # 如果找到的结果集非空，则输出
+                    return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})
+                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
+                    records = Throw.objects.all()
+                    return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname, "status": 2})
+            else:  # 两者中一个不为空
+                if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
+                    records = Throw.objects.filter(dump_place=dump_place)
+                    if records:  # 如果找到的结果集非空，则输出
+                        return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                        records = Throw.objects.all()
+                        return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname, "status": 0})
+                else:  # 如果获取的类型输入框内容不为空，则按类型查找
+                    records = Throw.objects.filter(dump_type=type_id)
+                    if records:  # 如果找到的结果集非空，则输出
+                        return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})
+                    else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
+                        records = Throw.objects.all()
+                        return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname, "status": 1})
+        else:  # 两者都为空，则显示空列表
+            records = Throw.objects.all()
+            return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname, "status": 3})
+# 删除投放记录
+def delete_record(request):
+    throw_id = request.GET.get("throw_id")
+    Throw.objects.filter(id=throw_id).delete()  # 当点击删除按钮后，删除该投放记录
+    records = Throw.objects.all()  # 把当前投放记录搜索出来
+    return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})
 # 修改管理员的密码
 def change_manager_password(request):
     result = User.objects.filter(account=account).first()
@@ -349,36 +448,3 @@ def change_manager_password(request):
             User.objects.filter(account=account).update(user_password=newPassword)  # 更新该用户的密码
             password = newPassword
         return render(request, 'manager/change_manager_password.html', context={"password": password, "name": global_mname})
-# 添加新垃圾桶
-def add_new_dump(request):
-    types = Type.objects.all()
-    if request.method == "GET":  # 此部分是当每次点击侧边导航栏的“添加垃圾桶”选项时，显示该界面
-        return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types})
-    else:  # 此部分是在add_new_dump.html页面中点击确认按钮后完成的添加垃圾桶操作
-        dump_id = request.POST.get("dump_id")  # 获取用户在前端输入框中的数据
-        dump_name = request.POST.get("dump_name")
-        dump_number = request.POST.get("dump_number")
-        dump_rest = request.POST.get("dump_rest")
-        dump_place = request.POST.get("dump_place")
-        type_name = request.POST.get("type_name")
-        if dump_number.isdigit() and dump_rest.isdigit():  # 判断输入的总投放次数和可投放次数是否为数字
-            type = Type.objects.filter(type_name=type_name).first()  # 垃圾桶类型是外键
-            Dump.objects.create(dump_id=dump_id, dump_name=dump_name, dump_number=dump_number, dump_rest=dump_rest, dump_place=dump_place, dump_type=type)  # 在dump表里添加新记录
-            return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types})
-        else:
-            return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types})
-# 投放记录
-def search_common(request):
-    if request.method == "GET":
-        records = Throw.objects.all()  # 把所有的投放记录搜索出来
-        return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})
-# 清理垃圾
-def return_dump(request):
-    throw_id = request.GET.get("throw_id")
-    result1 = Throw.objects.filter(id=throw_id).first()
-    result2 = Dump.objects.filter(dump_id=result1.dump_id).first()
-    rest = result2.dump_rest+1  # 清理后可投放次数+1
-    Dump.objects.filter(dump_id=result2.dump_id).update(dump_rest=rest)
-    Throw.objects.filter(id=throw_id).delete()  # 当点击删除按钮后，删除该投放记录
-    records = Throw.objects.all()  # 把当前投放记录搜索出来
-    return render(request, 'manager/search_common.html', context={"records": records, "name": global_mname})

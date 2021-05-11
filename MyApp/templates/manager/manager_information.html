@@ -19,7 +19,7 @@
 
     <section class="publicTime">
         <span id="time"></span>
-        <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
     </section>
 <!--主体内容-->
     <section class="publicMian ">
@@ -28,8 +28,8 @@
             <nav>
                 <ul class="list">
                     <li ><a href="/manager_information?">查看个人信息</a></li>
-                    <li><a href="/manage_dump?">管理垃圾桶</a></li>
-                    <li><a href="/add_new_dump?">添加垃圾桶</a></li>
+                    <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                    <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
                     <li><a href="/search_common?">查看投放记录</a></li>
                     <li><a href="/change_manager_password?">密码修改</a></li>
                 </ul>
@@ -58,30 +58,16 @@
     right: 25px;top: 5px;">
                     </div>
                     <div>
-                        <label >垃圾回收点：</label>
-                        <select name="stack" required>
-                            <option value="{{ stack }}">{{ stack }}</option>
-                            <option value="长安区">长安区</option>
-                            <option value="碑林区">碑林区</option>
-                            <option value="雁塔区">雁塔区</option>
-                            <option value="高新区">高新区</option>
-                            <option value="莲湖区">莲湖区</option>
-                            <option value="未央区">未央区</option>
-                            <option value="灞桥区">灞桥区</option>
-                            <option value="新城区">新城区</option>
-                            <option value="临潼区">临潼区</option>
-                            <option value="高陵区">高陵区</option>
-                            <option value="阎良区">阎良区</option>
-                            <option value="鄠邑区">鄠邑区</option>
-                            <option value="西咸新区">西咸新区</option>
-                        </select>
-                    </div>
-                    <div>
                         <label >邮箱：</label>
                         <input type="text" value="{{ email }}"name="email" />
                     </div>
                     <div class="providerAddBtn">
-                        <input type="submit"value="保存"onclick="alert('保存成功！')">
+                        <input type="submit"value="保存"onclick="alert('保存成功！')" style=" width: 88px;
+    height: 42px;
+    position: absolute;
+    left: 745px;
+    top: 370px;
+    font-size: 20px;">
                     </div>
                 </form>
             </div>

@@ -15,6 +15,14 @@
     <script>
     alert("未找到该类型的垃圾桶！！！")
     </script>
+{% elif status == 2 %}
+    <script>
+    alert("未找到该垃圾回收点中该类型的垃圾桶！！！")
+    </script>
+{% elif status == 3 %}
+    <script>
+    alert("请选择查询垃圾回收点的条件！！！")
+    </script>
 {% endif %}
 <!--头部-->
 <header class="publicHeader">
@@ -27,7 +35,7 @@
 <!--时间-->
 <section class="publicTime">
     <span id="time"></span>
-    <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+    <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
 </section>
 <!--主体内容-->
 <section class="publicMian ">
@@ -36,8 +44,8 @@
         <nav>
             <ul class="list">
                 <li ><a href="/manager_information?">查看个人信息</a></li>
-                <li><a href="/manage_dump?">管理垃圾桶</a></li>
-                <li><a href="/add_new_dump?">添加垃圾桶</a></li>
+                <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
                 <li><a href="/search_common?">查看投放记录</a></li>
                 <li><a href="/change_manager_password?">密码修改</a></li>
             </ul>
@@ -46,7 +54,7 @@
     <div class="right">
         <div class="location">
             <strong>你现在所在的位置是:</strong>
-            <span>管理垃圾桶页面</span>
+            <span>管理垃圾回收点页面</span>
         </div>
     <form>
     {% csrf_token %}
@@ -69,12 +77,13 @@
                         <option value="西咸新区">西咸新区</option>
                         </select>
             &nbsp;&nbsp;&nbsp;&nbsp;
-                <span>垃圾桶类型：</span>
-                <select name="type_id" >
-                    <option value="0">--请选择--</option>
-                    {% for type in types %}
-                        <option value="{{type.type_id}}">{{type.type_name}}</option>
-                    {% endfor %}
+               <span>垃圾桶类型：</span>
+                <select name="type_id"id="type_id">
+                    <option value="">--请选择--</option>
+                    <option value="A">厨余垃圾</option>
+                    <option value="B">可回收垃圾</option>
+                    <option value="C">有害垃圾</option>
+                    <option value="D">其他垃圾</option>
                 </select>
                 <input type="submit" value="查询"formaction="/manage_dump/"formmethod="post"
                 style="width: 70px;height: 37px;position: absolute;left: 760px;top: 116px;"/><!--点击查询按钮后提交到search_dump函数的post部分执行 -->
@@ -88,27 +97,23 @@
     <div style="overflow: scroll;height: 560px;width: 1255px;">
         <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1150px;left: 0px;">
             <tr class="firstTr">
-                <th>垃圾桶编号</th>
-                <th>垃圾桶名称</th>
-                <th>垃圾桶总投放次数</th>
-                <th>可投放次数</th>
+                <th>垃圾回收点编号</th>
+                <th>垃圾回收点</th>
                 <th>垃圾桶类型</th>
-                <th>所属垃圾回收点</th>
+                <th>垃圾桶数量</th>
                 <th>操作</th>
             </tr>
             {% for dump in dumps %}
                 <tr>
                     <td>{{ dump.dump_id }}</td>
-                    <td>{{ dump.dump_name }}</td>
-                    <td>{{ dump.dump_number }}</td>
-                    <td>{{ dump.dump_rest }}</td>
-                    <td>{{ dump.dump_type.type_name }}</td><!--因为垃圾桶类型是dump表的外键，所以需要二级引用-->
                     <td>{{ dump.dump_place }}</td>
+                    <td>{{ dump.dump_type.type_name }}</td><!--因为垃圾桶类型是dump表的外键，所以需要二级引用-->
+                    <td>{{ dump.dump_number }}</td>
                 <td>
                     <a href="/add_dump?dump_dump_id1={{ dump.dump_id }}"><img src="../../static/img/tianjia.png" alt="添加数量" title="添加数量"/></a>
                     <a href="/reduce_dump?dump_dump_id2={{ dump.dump_id }}"><img src="../../static/img/decrease.jpg" alt="减少数量" title="减少数量"/></a>
-                    <a href="/alter_dump?dump_dump_id3={{ dump.dump_id }}"><img src="../../static/img/xiugai.png" alt="修改" title="修改"/></a>
-                    <a href="#" class="removeProvider"onclick="alter({{ dump.dump_id }})"><img src="../../static/img/schu.png" alt="删除垃圾桶" title="删除垃圾桶"/></a>
+                    <a href="/alter_dump?dump_dump_id3={{ dump.dump_id }}"><img src="../../static/img/xiugai.png" alt="修改信息" title="修改信息"/></a>
+                    <a href="#" class="removeProvider"onclick="alter({{ dump.dump_id }})"><img src="../../static/img/schu.png" alt="删除垃圾回收点" title="删除垃圾回收点"/></a>
                 </td>
                 </tr>
             {% endfor %}
@@ -126,7 +131,7 @@
                {% csrf_token %}
            <p style="font-size: 20px;
     position: relative;
-    top: -28px;">你确定要清空该垃圾桶吗？</p>
+    top: -28px;">你确定要删除该垃圾回收点吗？</p>
                <input type="text"id="ok"name="dump_id"style="display: none;">
                <input type="submit"formaction="/delete_dump/"formmethod="get"value="确定"style="position: relative;top: 30px;">
                <input type="submit"formmethod="get"formaction="/manage_dump/" value="取消"style="position: relative;top: 30px;">

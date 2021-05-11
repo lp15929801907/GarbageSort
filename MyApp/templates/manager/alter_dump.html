@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="../../static/css/style.css"/>
 </head>
 <body>
+{% if status == 0 %}
+    <script>
+    alert("该编号已使用！！！")
+    </script>
+{% elif status == 1 %}
+    <script>
+    alert("修改成功！！！")
+    </script>
+{% elif status == 2 %}
+    <script>
+    alert("您输入的格式有误！请在垃圾桶数量中输入数字！！！")
+    </script>
+{% endif %}
 <!--头部-->
     <header class="publicHeader">
         <h1>垃圾分类系统</h1>
@@ -19,7 +32,7 @@
 
     <section class="publicTime">
         <span id="time"></span>
-        <a href="#">温馨提示：为了能正常浏览，请使用google浏览器！</a>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
     </section>
 <!--主体内容-->
     <section class="publicMian ">
@@ -28,56 +41,26 @@
             <nav>
                 <ul class="list">
                     <li ><a href="/manager_information?">查看个人信息</a></li>
-                    <li><a href="/manage_dump?">管理垃圾桶</a></li>
-                    <li><a href="/add_new_dump?">添加垃圾桶</a></li>
+                    <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                    <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
                     <li><a href="/search_common?">查看投放记录</a></li>
                     <li><a href="/change_manager_password?">密码修改</a></li>
                 </ul>
             </nav>
         </div>
-    <script>
-        function fun() {
-            var dump_id = document.getElementById("dump_id").value
-            var dump_name = document.getElementById("dump_name").value
-            var type_name = document.getElementById("type_name").value
-            var dump_place=document.getElementById("dump_place").value
-            var dump_number=document.getElementById("dump_number").value
-            var dump_rest=document.getElementById("dump_rest").value
-            var a = /^\d+$/.test(dump_number);
-            var b = /^\d+$/.test(dump_rest);
-            if(dump_id==''||dump_name==''||type_name==''||dump_number==''||dump_rest==''|| dump_place=='')
-                ;
-            else
-                if(a && b)
-                    alert("修改成功！")
-                else
-                    alert("垃圾桶总投放次数和可投放次数中输入的不是数字，请重新修改垃圾桶信息！")
-        }
-    </script>
         <div class="right">
             <div class="location">
                 <strong>你现在所在的位置是:</strong>
-                <span>修改垃圾桶信息页面</span>
+                <span>修改垃圾回收点信息页面</span>
             </div>
             <div class="providerAdd">
                 <form action="/alter_dump/"method="post">
                     {% csrf_token %}
                     <div>
-                        <label >垃圾桶编号：</label>
-                        <input type="text" name="dump_id"value="{{ dump_id }}"id="dump_id" required readonly/>
-                        <label >垃圾桶类型：</label>
-                        <select name="type_name"id="type_name">
-                            <option value="{{ type_name }}">{{ type_name }}</option>
-                         {% for type in types %}
-                            <option value="{{type.type_name}}">{{ type.type_name}}</option>
-                         {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label >垃圾桶名称：</label>
-                        <input type="text"name="dump_name"value="{{ dump_name }}" id="dump_name" required/>
-                        <label >所属垃圾回收点：</label>
-                        <select name="dump_place"id="dump_place" required>
+                        <label >垃圾回收点编号：</label>
+                        <input type="text" name="dump_id"value="{{ dump_id }}"id="dump_id" required/>
+                        <label >垃圾回收点位置：</label>
+                        <select name="dump_place"id="dump_place" required/>
                         <option value="{{ dump_place }}">{{ dump_place }}</option>
                         <option value="长安区">长安区</option>
                         <option value="碑林区">碑林区</option>
@@ -95,13 +78,18 @@
                         </select>
                     </div>
                     <div>
-                        <label >垃圾桶总投放次数：</label>
-                        <input type="text" name="dump_number"id="dump_number" value="{{ dump_number }}"required/>
-                        <label >可投放次数：</label>
-                        <input type="text"name="dump_rest" value="{{ dump_rest }}"id="dump_rest" required/>
+                        <label >垃圾桶类型：</label>
+                        <select name="type_name"id="type_name" required/>
+                        <option value="{{ type_name }}">{{ type_name }}</option>
+                         {% for type in types %}
+                            <option value="{{type.type_name}}">{{type.type_name}}</option>
+                         {% endfor %}
+                        </select>
+                        <label >垃圾桶数量：</label>
+                        <input type="text" name="dump_number"value="{{ dump_number }}"id="dump_number" required/>
                     </div>
                     <div class="providerAddBtn">
-                        <input type="submit"value="确&nbsp;认"onclick="fun()" style=" width: 88px;
+                        <input type="submit"value="确&nbsp;认"style=" width: 88px;
     height: 42px;
     position: absolute;
     left: 745px;
