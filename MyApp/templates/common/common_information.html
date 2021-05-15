@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>垃圾分类系统</title>
-    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/public1.css"/>
     <link rel="stylesheet" href="../../static/css/style.css"/>
 </head>
 <body>
@@ -27,25 +27,26 @@
             <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
             <nav>
                 <ul class="list">
-                    <li><a href="/common_information?">查看个人信息</a></li>
-                    <li><a href="/search_dump?">查看垃圾回收点</a></li>
-                    <li><a href="/throw_record?">投放垃圾记录</a></li>
+                    <li><a href="/common_information?">用户个人信息</a></li>
+                    <li><a href="/garbage_type?">垃圾类别</a></li>
+                    <li><a href="/search_dump?">垃圾回收点</a></li>
+                    <li><a href="/throw_record?">投放记录</a></li>
+                    <li><a href="/common_analysis?">数据分析</a></li>
                     <li><a href="/change_password?">密码修改</a></li>
-                    <li><a href="/login?">退出系统</a></li>
                 </ul>
             </nav>
         </div>
         <div class="right">
             <div class="location">
                 <strong>你现在所在的位置是:</strong>
-                <span>查看个人信息页面</span>
+                <span>查看用户个人信息页面</span>
             </div>
             <div class="providerAdd">
                 <form action="/common_information/"method="post">
                     {% csrf_token %}
                     <div>
                         <label >姓名：</label>
-                        <input type="text" value="{{ name }}"  readonly/><img src="../../static/img/timg.jpg"style="position: relative;
+                        <input type="text" value="{{ name }}"  readonly/><img src="../../static/img/jinzhixiugai.jpg" style="position: relative;
     right: 25px;top: 5px;">
                     </div>
                     <div>
@@ -73,7 +74,7 @@
                     </div>
                     <div>
                         <label >电话：</label>
-                        <input type="text" value="{{ telephone }}" name="telephone"readonly /><img src="../../static/img/timg.jpg"style="position: relative;
+                        <input type="text" value="{{ telephone }}" name="telephone"readonly /><img src="../../static/img/jinzhixiugai.jpg" style="position: relative;
     right: 25px;top: 5px;">
                     </div>
                     <div>
@@ -82,7 +83,7 @@
                     </div>
                     <div>
                         <label >积分：</label>
-                        <input type="text" value="{{ integral }}" name="integral"readonly /><img src="../../static/img/timg.jpg"style="position: relative;
+                        <input type="text" value="{{ integral }}" name="integral"readonly /><img src="../../static/img/jinzhixiugai.jpg" style="position: relative;
     right: 25px;top: 5px;">
                     </div>
                     <div class="providerAddBtn">

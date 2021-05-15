@@ -27,10 +27,11 @@
             <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
             <nav>
                 <ul class="list">
-                    <li ><a href="/manager_information?">查看个人信息</a></li>
+                    <li><a href="/manager_information?">管理员个人信息</a></li>
                     <li><a href="/manage_dump?">管理垃圾回收点</a></li>
                     <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
-                    <li><a href="/search_common?">查看投放记录</a></li>
+                    <li><a href="/search_record?">查看投放记录</a></li>
+                    <li><a href="/manage_analysis?">数据分析</a></li>
                     <li><a href="/change_manager_password?">密码修改</a></li>
                 </ul>
             </nav>
@@ -45,7 +46,7 @@
                     {% csrf_token %}
                     <div>
                         <label >姓名：</label>
-                        <input type="text" value="{{ name }}"  readonly/><img src="../../static/img/timg.jpg"style="position: relative;
+                        <input type="text" value="{{ name }}"  readonly/><img src="../../static/img/jinzhixiugai.jpg" style="position: relative;
     right: 25px;top: 5px;">
                     </div>
                     <div>
@@ -54,7 +55,7 @@
                     </div>
                     <div>
                         <label >电话：</label>
-                        <input type="text" value="{{ telephone }}" name="telephone"readonly /><img src="../../static/img/timg.jpg"style="position: relative;
+                        <input type="text" value="{{ telephone }}" name="telephone"readonly /><img src="../../static/img/jinzhixiugai.jpg" style="position: relative;
     right: 25px;top: 5px;">
                     </div>
                     <div>

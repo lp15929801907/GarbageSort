@@ -43,11 +43,12 @@
         <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
         <nav>
             <ul class="list">
-                <li ><a href="/manager_information?">查看个人信息</a></li>
-                <li><a href="/manage_dump?">管理垃圾回收点</a></li>
-                <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
-                <li><a href="/search_common?">查看投放记录</a></li>
-                <li><a href="/change_manager_password?">密码修改</a></li>
+                <li><a href="/manager_information?">管理员个人信息</a></li>
+                    <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                    <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
+                    <li><a href="/search_record?">查看投放记录</a></li>
+                    <li><a href="/manage_analysis?">数据分析</a></li>
+                    <li><a href="/change_manager_password?">密码修改</a></li>
             </ul>
         </nav>
     </div>
@@ -80,8 +81,8 @@
                <span>垃圾桶类型：</span>
                 <select name="type_id"id="type_id">
                     <option value="">--请选择--</option>
-                    <option value="A">厨余垃圾</option>
-                    <option value="B">可回收垃圾</option>
+                    <option value="A">可回收物</option>
+                    <option value="B">厨余垃圾</option>
                     <option value="C">有害垃圾</option>
                     <option value="D">其他垃圾</option>
                 </select>
@@ -97,11 +98,11 @@
     <div style="overflow: scroll;height: 560px;width: 1255px;">
         <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1150px;left: 0px;">
             <tr class="firstTr">
-                <th>垃圾回收点编号</th>
-                <th>垃圾回收点</th>
-                <th>垃圾桶类型</th>
-                <th>垃圾桶数量</th>
-                <th>操作</th>
+                <th style="width: 70px;">垃圾回收点编号</th>
+                <th style="width: 70px;">垃圾回收点</th>
+                <th style="width: 70px;">垃圾桶类型</th>
+                <th style="width: 70px;">垃圾桶数量</th>
+                <th style="width: 70px;">操作</th>
             </tr>
             {% for dump in dumps %}
                 <tr>
@@ -110,10 +111,10 @@
                     <td>{{ dump.dump_type.type_name }}</td><!--因为垃圾桶类型是dump表的外键，所以需要二级引用-->
                     <td>{{ dump.dump_number }}</td>
                 <td>
-                    <a href="/add_dump?dump_dump_id1={{ dump.dump_id }}"><img src="../../static/img/tianjia.png" alt="添加数量" title="添加数量"/></a>
-                    <a href="/reduce_dump?dump_dump_id2={{ dump.dump_id }}"><img src="../../static/img/decrease.jpg" alt="减少数量" title="减少数量"/></a>
+                    <a href="/add_dump?dump_dump_id1={{ dump.dump_id }}"><img src="../../static/img/zengjia.png" alt="添加数量" title="添加数量"/></a>
+                    <a href="/reduce_dump?dump_dump_id2={{ dump.dump_id }}"><img src="../../static/img/jianshao.jpg" alt="减少数量" title="减少数量"/></a>
                     <a href="/alter_dump?dump_dump_id3={{ dump.dump_id }}"><img src="../../static/img/xiugai.png" alt="修改信息" title="修改信息"/></a>
-                    <a href="#" class="removeProvider"onclick="alter({{ dump.dump_id }})"><img src="../../static/img/schu.png" alt="删除垃圾回收点" title="删除垃圾回收点"/></a>
+                    <a href="#" class="removeProvider"onclick="alter({{ dump.dump_id }})"><img src="../../static/img/shanchu.png" alt="删除垃圾回收点" title="删除垃圾回收点"/></a>
                 </td>
                 </tr>
             {% endfor %}

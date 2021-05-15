@@ -3,7 +3,7 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>垃圾分类系统</title>
-    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/public1.css"/>
     <link rel="stylesheet" href="../../static/css/style.css"/>
 </head>
 <body>
@@ -41,18 +41,19 @@
             <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
             <nav>
                 <ul class="list">
-                    <li><a href="/common_information?">查看个人信息</a></li>
-                    <li><a href="/search_dump?">查看垃圾回收点</a></li>
-                    <li><a href="/throw_record?">投放垃圾记录</a></li>
+                    <li><a href="/common_information?">用户个人信息</a></li>
+                    <li><a href="/garbage_type?">垃圾类别</a></li>
+                    <li><a href="/search_dump?">垃圾回收点</a></li>
+                    <li><a href="/throw_record?">投放记录</a></li>
+                    <li><a href="/common_analysis?">数据分析</a></li>
                     <li><a href="/change_password?">密码修改</a></li>
-                    <li><a href="/login?">退出系统</a></li>
                 </ul>
             </nav>
         </div>
         <div class="right">
             <div class="location">
                 <strong>你现在所在的位置是:</strong>
-                <span>投放垃圾记录页面</span>
+                <span>查看垃圾投放记录页面</span>
             </div>
         <form>
         {% csrf_token %}
@@ -78,13 +79,13 @@
                 <span>投放垃圾类型：</span>
                 <select name="type_id"id="type_id">
                     <option value="">--请选择--</option>
-                    <option value="A">厨余垃圾</option>
-                    <option value="B">可回收垃圾</option>
+                    <option value="A">可回收物</option>
+                    <option value="B">厨余垃圾</option>
                     <option value="C">有害垃圾</option>
                     <option value="D">其他垃圾</option>
                 </select>
                 <input type="submit" value="查询"formaction="/throw_record/"formmethod="post" style="width: 70px;height: 37px;position: absolute;left: 760px;top: 116px;"/><!--点击查询按钮后提交到throw_record函数的post部分执行 -->
-            </div>
+        </div>
     </form>
             <div style="overflow: scroll;height: 604px;">
             <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1113px;left: 100px;margin-left: -94px;">
