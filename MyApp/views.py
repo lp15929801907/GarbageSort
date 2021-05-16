@@ -16,8 +16,8 @@ def common_register(request):
     email = request.POST.get("common_email")  # 获取用户输入的邮箱
     telephone = request.POST.get("common_telephone")  # 获取用户输入的手机号
     password = request.POST.get("common_password")  # 获取用户输入的密码
-    result1 = User.objects.filter(account=telephone)  # 在用户表中搜索该手机号的记录
-    result2 = Common.objects.filter(common_id=id)  # 在普通用户信息表中搜索该昵称的记录
+    result1 = User.objects.filter(account=telephone)  # 在用户表中查询该手机号的记录
+    result2 = Common.objects.filter(common_id=id)  # 在普通用户信息表中查询该昵称的记录
     context = {}
     if len(result1) == 1:  # 判断该手机号是否存在(即判断是否注册过)，如果后台存在记录，则返回相应的提示语句
         context["info"] = "该手机号已注册！！！"
@@ -41,8 +41,8 @@ def manager_register(request):
     email = request.POST.get("manager_email")  # 获取管理员输入的邮箱
     telephone = request.POST.get("manager_telephone")  # 获取管理员输入的手机号
     password = request.POST.get("manager_password")  # 获取管理员输入的密码
-    result1 = User.objects.filter(account=telephone)  # 在用户表中搜索该手机号的记录
-    result2 = Manager.objects.filter(manager_id=id)  # 在管理员信息表中搜索该昵称的使用记录
+    result1 = User.objects.filter(account=telephone)  # 在用户表中查询该手机号的记录
+    result2 = Manager.objects.filter(manager_id=id)  # 在管理员信息表中查询该昵称的使用记录
     context = {}
     if len(result1) == 1:  # 判断该手机号是否存在(即判断是否注册过)，如果后台存在记录，则返回相应的提示语句
         context["info"] = "该手机号已注册！！！"
@@ -64,7 +64,7 @@ def login_judge(request):
     global account, global_cname, global_mname  # 定义全局变量account,存储该用户的账号,global_cname保存普通用户的姓名,global_mname保存管理员的姓名
     account = request.POST.get("telephone")  # 获取前端输入的手机号
     user_password = request.POST.get("password")  # 获取前端输入的密码
-    result = User.objects.filter(account=account)  # 在user表里检索是否存在该账号
+    result = User.objects.filter(account=account)  # 在user表里查询是否存在该账号
     if len(result) == 1:  # 判断后台是否存在该用户，有则进一步判断密码是否正确
         password = result[0].user_password  # 获取后台的密码
         identity = result[0].user_identity  # 获取该账号的身份信息
@@ -142,7 +142,7 @@ def search_dump(request):
         dumps = Dump.objects.all()
         types = Type.objects.all()
         return render(request, 'common/search_dump.html', context={"dumps": dumps, "types": types, "name": global_cname})  # 向前端传递所有查找到的垃圾回收点信息的集合
-    else:  # common/search_dump.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+    else:  # common/search_dump.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
         dump_place = request.POST.get("dump_place")
         type_id = request.POST.get("type_id")
         types = Type.objects.all()
@@ -151,7 +151,7 @@ def search_dump(request):
                 dump_result = Dump.objects.filter(dump_place=dump_place, dump_type=type_id)
                 if dump_result:  # 如果找到的结果集非空，则输出
                     return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
-                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
+                else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
                     dump_result = Dump.objects.all()
                     return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 2})
             else:  # 两者中一个不为空
@@ -159,14 +159,14 @@ def search_dump(request):
                     dump_result = Dump.objects.filter(dump_place=dump_place)
                     if dump_result:  # 如果找到的结果集非空，则输出
                         return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                    else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点！
                         dump_result = Dump.objects.all()
                         return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 0})
                 else:  # 如果获取的类型输入框内容不为空，则按类型查找
                     dump_result = Dump.objects.filter(dump_type=type_id)
                     if dump_result:  # 如果找到的结果集非空，则输出
                         return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
+                    else:  # 若查询的结果集为0，那么输出未找到该类型的垃圾桶！
                         dump_result = Dump.objects.all()
                         return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 1})
         else:  # 两者都为空，则显示空列表
@@ -187,9 +187,9 @@ def throw_dump(request):
 # 查看个人投放记录
 def throw_record(request):
     if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“查找个人投放记录”选项时，都要显示出所有投放记录信息
-        records = Throw.objects.filter(common_tel=account)  # 把当前用户的投放记录搜索出来
+        records = Throw.objects.filter(common_tel=account)  # 把当前用户的投放记录查询出来
         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
-    else:  # common/throw_record.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+    else:  # common/throw_record.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
         dump_place = request.POST.get("dump_place")
         type_id = request.POST.get("type_id")
         if dump_place or type_id:  # 两者中至少有一个不为空
@@ -197,7 +197,7 @@ def throw_record(request):
                 records = Throw.objects.filter(common_tel=account, dump_place=dump_place, dump_type=type_id)
                 if records:  # 如果找到的结果集非空，则输出
                     return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
-                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
+                else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
                     records = Throw.objects.filter(common_tel=account)
                     return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 2})
             else:  # 两者中一个不为空
@@ -205,30 +205,31 @@ def throw_record(request):
                     records = Throw.objects.filter(common_tel=account, dump_place=dump_place)
                     if records:  # 如果找到的结果集非空，则输出
                         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                    else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点！
                         records = Throw.objects.filter(common_tel=account)
                         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 0})
                 else:  # 如果获取的类型输入框内容不为空，则按类型查找
                     records = Throw.objects.filter(common_tel=account, dump_type=type_id)
                     if records:  # 如果找到的结果集非空，则输出
                         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
+                    else:  # 若查询的结果集为0，那么输出未找到该类型的垃圾桶！
                         records = Throw.objects.filter(common_tel=account)
                         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 1})
         else:  # 两者都为空，则显示空列表
             records = Throw.objects.filter(common_tel=account)
             return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 3})
-# 分析单用户投放记录
+# 分析单用户投放记录数据
 def common_analysis(request):
-    record1 = Throw.objects.filter(common_tel=account, dump_type="A")  # 把当前用户投放厨余垃圾的记录搜索出来
-    record2 = Throw.objects.filter(common_tel=account, dump_type="B")  # 把当前用户投放可回收垃圾的记录搜索出来
-    record3 = Throw.objects.filter(common_tel=account, dump_type="C")  # 把当前用户投放有害垃圾的记录搜索出来
-    record4 = Throw.objects.filter(common_tel=account, dump_type="D")  # 把当前用户投放其他垃圾的记录搜索出来
+    record = Throw.objects.filter(common_tel=account)  # 把当前用户所有的投放记录查询出来
+    record1 = Throw.objects.filter(common_tel=account, dump_type="A")  # 把当前用户投放厨余垃圾的记录查询出来
+    record2 = Throw.objects.filter(common_tel=account, dump_type="B")  # 把当前用户投放可回收垃圾的记录查询出来
+    record3 = Throw.objects.filter(common_tel=account, dump_type="C")  # 把当前用户投放有害垃圾的记录查询出来
+    record4 = Throw.objects.filter(common_tel=account, dump_type="D")  # 把当前用户投放其他垃圾的记录查询出来
+    count = len(record)
     count1 = len(record1)
     count2 = len(record2)
     count3 = len(record3)
     count4 = len(record4)
-    count = [count1, count2, count3, count4]
     return render(request, 'common/common_analysis.html', context={"count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4,  "name": global_cname})
 # 修改密码
 def change_password(request):
@@ -274,7 +275,7 @@ def manage_dump(request):
         dumps = Dump.objects.all()
         types = Type.objects.all()
         return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾回收点信息的集合
-    else:  # 在manager/manage_bok.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+    else:  # 在manager/manage_bok.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
         dump_place = request.POST.get("dump_place")
         type_id = request.POST.get("type_id")
         types = Type.objects.all()
@@ -283,7 +284,7 @@ def manage_dump(request):
                 dump_result = Dump.objects.filter(dump_place=dump_place, dump_type=type_id)
                 if dump_result:  # 如果找到的结果集非空，则输出
                     return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
-                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点！
                     dump_result = Dump.objects.all()
                     return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 2})
             else:  # 两者中一个不为空
@@ -291,14 +292,14 @@ def manage_dump(request):
                     dump_result = Dump.objects.filter(dump_place=dump_place)
                     if dump_result:  # 如果找到的结果集非空，则输出
                         return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                    else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点！
                         dump_result = Dump.objects.all()
                         return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 0})
                 else:  # 如果获取的类型输入框内容不为空，则按类型查找
                     dump_result = Dump.objects.filter(dump_type=type_id)
                     if dump_result:  # 如果找到的结果集非空，则输出
                         return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname})
-                    else:  # 若搜索的结果集为0，那么输出未找到类型的垃圾桶！
+                    else:  # 若查询的结果集为0，那么输出未找到类型的垃圾桶！
                         dump_result = Dump.objects.all()
                         return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 1})
         else:  # 两者都为空，则显示空列表
@@ -352,7 +353,7 @@ def alter_dump(request):
         dump_number = request.POST.get("dump_number")
         dump_place = request.POST.get("dump_place")
         type_name = request.POST.get("type_name")
-        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中搜索该编号的记录
+        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中查询该编号的记录
         if len(result) == 1:  # 判断该编号是否使用，如果后台存在记录，则说明使用过
             context = {
                 "dump_id": dump_id,
@@ -400,7 +401,7 @@ def add_new_dump(request):
         dump_number = request.POST.get("dump_number")
         dump_place = request.POST.get("dump_place")
         type_name = request.POST.get("type_name")
-        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中搜索该编号的记录
+        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中查询该编号的记录
         if len(result) == 1:  # 判断该编号是否存在，如果后台存在记录，则返回相应的提示语句
             return render(request, 'manager/add_new_dump.html', context={"name": global_mname, "types": types, "status": 0})
         else:  # 该编号未使用
@@ -413,54 +414,152 @@ def add_new_dump(request):
 # 查看所有投放记录
 def search_record(request):
     if request.method == "GET":
-        records = Throw.objects.all()  # 把所有的投放记录搜索出来
-        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
-    else:  # manager/search_record.html页面中通过post方式的“搜索”按钮跳转到此处，即完成搜索操作
+        commons = Common.objects.all()  # 把所有用户查询出来
+        records = Throw.objects.all()  # 把所有的投放记录查询出来
+        return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname})
+    else:  # manager/search_record.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
+        commons = Common.objects.all()  # 把所有用户查询出来
+        common_tel = request.POST.get("common_tel")
         dump_place = request.POST.get("dump_place")
-        type_id = request.POST.get("type_id")
-        if dump_place or type_id:  # 两者中至少有一个不为空
-            if dump_place and type_id:  # 两者都不为空
-                records = Throw.objects.filter(dump_place=dump_place, dump_type=type_id)
+        if common_tel or dump_place:  # 两者中至少有一个不为空
+            if common_tel and dump_place:  # 两者都不为空
+                records = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place)
                 if records:  # 如果找到的结果集非空，则输出
-                    return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
-                else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点中该类型的垃圾桶！
+                    return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname})
+                else:  # 若查询的结果集为0，那么输出未找到该用户在该垃圾回收点的投放记录！
                     records = Throw.objects.all()
-                    return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname, "status": 2})
+                    return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname, "status": 2})
             else:  # 两者中一个不为空
-                if dump_place:  # 如果垃圾回收点非空，则按垃圾回收点查找
+                if common_tel:  # 如果用户非空，则按用户查找
+                    records = Throw.objects.filter(common_tel=common_tel)
+                    if records:  # 如果找到的结果集非空，则输出
+                        return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname})
+                    else:  # 若查询的结果集为0，那么输出未找到该用户的投放记录！
+                        records = Throw.objects.all()
+                        return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname, "status": 0})
+                else:  # 如果获取的垃圾回收点输入框内容不为空，则按垃圾回收点查找
                     records = Throw.objects.filter(dump_place=dump_place)
                     if records:  # 如果找到的结果集非空，则输出
-                        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该垃圾回收点！
+                        return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname})
+                    else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点的投放记录！
                         records = Throw.objects.all()
-                        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname, "status": 0})
-                else:  # 如果获取的类型输入框内容不为空，则按类型查找
-                    records = Throw.objects.filter(dump_type=type_id)
-                    if records:  # 如果找到的结果集非空，则输出
-                        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
-                    else:  # 若搜索的结果集为0，那么输出未找到该类型的垃圾桶！
-                        records = Throw.objects.all()
-                        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname, "status": 1})
+                        return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname, "status": 1})
         else:  # 两者都为空，则显示空列表
             records = Throw.objects.all()
-            return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname, "status": 3})
+            return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname, "status": 3})
 # 分析所有的投放记录
 def manage_analysis(request):
-    record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录搜索出来
-    record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录搜索出来
-    record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录搜索出来
-    record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录搜索出来
-    count1 = len(record1)
-    count2 = len(record2)
-    count3 = len(record3)
-    count4 = len(record4)
-    count = [count1, count2, count3, count4]
-    return render(request, 'manager/manage_analysis.html', context={"count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4,  "name": global_mname})
+    if request.method == "GET":
+        commons = Common.objects.all()  # 把所有用户查询出来
+        records = Throw.objects.all()  # 把所有用户的投放记录查询出来
+        record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
+        record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
+        record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
+        record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
+        count = len(records)
+        count1 = len(record1)
+        count2 = len(record2)
+        count3 = len(record3)
+        count4 = len(record4)
+        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+    else:  # manager/search_record.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
+        commons = Common.objects.all()  # 把所有用户查询出来
+        common_tel = request.POST.get("common_tel")
+        dump_place = request.POST.get("dump_place")
+        if common_tel or dump_place:  # 两者中至少有一个不为空
+            if common_tel and dump_place:  # 两者都不为空
+                records = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place)
+                if records:  # 如果找到的结果集非空，则输出
+                    record1 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="A")
+                    record2 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="B")
+                    record3 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="C")
+                    record4 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="D")
+                    count = len(records)
+                    count1 = len(record1)
+                    count2 = len(record2)
+                    count3 = len(record3)
+                    count4 = len(record4)
+                    return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+                else:  # 若查询的结果集为0，那么输出未找到该用户在该垃圾回收点的投放记录！
+                    records = Throw.objects.all()  # 把所有用户的投放记录查询出来
+                    record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
+                    record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
+                    record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
+                    record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
+                    count = len(records)
+                    count1 = len(record1)
+                    count2 = len(record2)
+                    count3 = len(record3)
+                    count4 = len(record4)
+                    return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 2})
+            else:  # 两者中一个不为空
+                if common_tel:  # 如果用户非空，则按用户查找
+                    records = Throw.objects.filter(common_tel=common_tel)
+                    if records:  # 如果找到的结果集非空，则输出
+                        record1 = Throw.objects.filter(common_tel=common_tel, dump_type="A")
+                        record2 = Throw.objects.filter(common_tel=common_tel, dump_type="B")
+                        record3 = Throw.objects.filter(common_tel=common_tel, dump_type="C")
+                        record4 = Throw.objects.filter(common_tel=common_tel, dump_type="D")
+                        count = len(records)
+                        count1 = len(record1)
+                        count2 = len(record2)
+                        count3 = len(record3)
+                        count4 = len(record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+                    else:  # 若查询的结果集为0，那么输出未找到该用户的投放记录！
+                        records = Throw.objects.all()  # 把所有用户的投放记录查询出来
+                        record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
+                        record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
+                        record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
+                        record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
+                        count = len(records)
+                        count1 = len(record1)
+                        count2 = len(record2)
+                        count3 = len(record3)
+                        count4 = len(record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 0})
+                else:  # 如果获取的垃圾回收点输入框内容不为空，则按垃圾回收点查找
+                    records = Throw.objects.filter(dump_place=dump_place)
+                    if records:  # 如果找到的结果集非空，则输出
+                        record1 = Throw.objects.filter(dump_place=dump_place, dump_type="A")
+                        record2 = Throw.objects.filter(dump_place=dump_place, dump_type="B")
+                        record3 = Throw.objects.filter(dump_place=dump_place, dump_type="C")
+                        record4 = Throw.objects.filter(dump_place=dump_place, dump_type="D")
+                        count = len(records)
+                        count1 = len(record1)
+                        count2 = len(record2)
+                        count3 = len(record3)
+                        count4 = len(record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+                    else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点的投放记录！
+                        records = Throw.objects.all()  # 把所有用户的投放记录查询出来
+                        record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
+                        record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
+                        record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
+                        record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
+                        count = len(records)
+                        count1 = len(record1)
+                        count2 = len(record2)
+                        count3 = len(record3)
+                        count4 = len(record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 1})
+        else:  # 两者都为空，则显示空列表
+            records = Throw.objects.all()  # 把所有用户的投放记录查询出来
+            record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
+            record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
+            record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
+            record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
+            count = len(records)
+            count1 = len(record1)
+            count2 = len(record2)
+            count3 = len(record3)
+            count4 = len(record4)
+            return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 3})
 # 删除投放记录
 def delete_record(request):
     throw_id = request.GET.get("throw_id")
     Throw.objects.filter(id=throw_id).delete()  # 当点击删除按钮后，删除该投放记录
-    records = Throw.objects.all()  # 把当前投放记录搜索出来
+    records = Throw.objects.all()  # 把当前投放记录查询出来
     return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
 # 修改管理员的密码
 def change_manager_password(request):
