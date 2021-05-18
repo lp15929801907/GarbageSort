@@ -41,5 +41,7 @@ urlpatterns = [
     path('alter_dump/', App_views.alter_dump),
     path('common_analysis/', App_views.common_analysis),
     path('manage_analysis/', App_views.manage_analysis),
+    path('manage_common/', App_views.manage_common),
+    path('delete_common/', App_views.delete_common),
     path('', App_views.login),
 ]

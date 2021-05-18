@@ -140,18 +140,21 @@ li{
     background: url("../img/gerenxinxi.png") 0  center no-repeat;
 }
 .list li:nth-child(2){
-    background: url("../img/huishouzhan.png") 0  center no-repeat;
+    background: url("../img/yonghu.png") 0  center no-repeat;
 }
 .list li:nth-child(3){
-    background: url("../img/tianjia.png") 0  center no-repeat;
+    background: url("../img/huishoudian.png") 0  center no-repeat;
 }
 .list li:nth-child(4){
-    background: url("../img/jilu.png") 0  center no-repeat;
+    background: url("../img/tianjia.png") 0  center no-repeat;
 }
 .list li:nth-child(5){
+    background: url("../img/jilu.png") 0  center no-repeat;
+}
+.list li:nth-child(6){
     background: url("../img/shujufenxi.png") 0  center no-repeat;
 }
-.list li:nth-child(6) {
+.list li:nth-child(7) {
     background: url("../img/mima.png") 0 center no-repeat;
 }
 .list li:hover{

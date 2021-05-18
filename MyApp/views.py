@@ -169,7 +169,7 @@ def search_dump(request):
                     else:  # 若查询的结果集为0，那么输出未找到该类型的垃圾桶！
                         dump_result = Dump.objects.all()
                         return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 1})
-        else:  # 两者都为空，则显示空列表
+        else:  # 两者都为空
             dump_result = Dump.objects.all()
             return render(request, 'common/search_dump.html', context={"dumps": dump_result, "types": types, "name": global_cname, "status": 3})
 # 投放垃圾
@@ -215,7 +215,7 @@ def throw_record(request):
                     else:  # 若查询的结果集为0，那么输出未找到该类型的垃圾桶！
                         records = Throw.objects.filter(common_tel=account)
                         return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 1})
-        else:  # 两者都为空，则显示空列表
+        else:  # 两者都为空
             records = Throw.objects.filter(common_tel=account)
             return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 3})
 # 分析单用户投放记录数据
@@ -269,6 +269,30 @@ def manager_information(request):
             "email": result[0].manager_email,
         }
         return render(request, 'manager/manager_information.html', context)  # 将该管理员的个人信息再次传到前端页面
+# 管理注册用户
+def manage_common(request):
+    if request.method == "GET":
+        commons = Common.objects.all()  # 把所有用户查询出来
+        return render(request, 'manager/manage_common.html', context={"commons": commons, "name": global_mname})
+    else:  # manager/manage_common.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
+        common_address = request.POST.get("common_address")
+        if common_address:  # 如果用户地址非空，则按用户地址查找
+            commons = Common.objects.filter(common_address=common_address)
+            if commons:  # 如果找到的结果集非空，则输出
+                return render(request, 'manager/manage_common.html', context={"commons": commons, "name": global_mname})
+            else:  # 若查询的结果集为0，那么输出未找到该地区的注册用户！
+                commons = Common.objects.all()  # 把所有用户查询出来
+                return render(request, 'manager/manage_common.html', context={"commons": commons, "name": global_mname, "status": 0})
+        else:  # 如果用户地址为空，则输出提示信息！
+            commons = Common.objects.all()  # 把所有用户查询出来
+            return render(request, 'manager/manage_common.html', context={"commons": commons, "name": global_mname, "status": 1})
+# 删除注册用户
+def delete_common(request):
+    if request.method == "GET":
+        common_tel = request.GET.get("common_tel")
+        Common.objects.filter(common_tel=common_tel).delete()  # 当点击删除按钮后，删除该用户
+        commons = Common.objects.all()  # 把所有用户查询出来
+        return render(request, 'manager/manage_common.html', context={"commons": commons, "name": global_mname})
 # 管理垃圾回收点
 def manage_dump(request):
     if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“管理垃圾回收点”选项时，都要显示出所有垃圾回收点资料
@@ -302,7 +326,7 @@ def manage_dump(request):
                     else:  # 若查询的结果集为0，那么输出未找到类型的垃圾桶！
                         dump_result = Dump.objects.all()
                         return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 1})
-        else:  # 两者都为空，则显示空列表
+        else:  # 两者都为空
             dump_result = Dump.objects.all()
             return render(request, 'manager/manage_dump.html', context={"dumps": dump_result, "types": types, "name": global_mname, "status": 3})
 # 增加垃圾桶的数量
@@ -444,7 +468,7 @@ def search_record(request):
                     else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点的投放记录！
                         records = Throw.objects.all()
                         return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname, "status": 1})
-        else:  # 两者都为空，则显示空列表
+        else:  # 两者都为空
             records = Throw.objects.all()
             return render(request, 'manager/search_record.html', context={"commons": commons, "records": records, "name": global_mname, "status": 3})
 # 分析所有的投放记录
@@ -543,7 +567,7 @@ def manage_analysis(request):
                         count3 = len(record3)
                         count4 = len(record4)
                         return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 1})
-        else:  # 两者都为空，则显示空列表
+        else:  # 两者都为空
             records = Throw.objects.all()  # 把所有用户的投放记录查询出来
             record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
             record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
@@ -557,10 +581,11 @@ def manage_analysis(request):
             return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 3})
 # 删除投放记录
 def delete_record(request):
-    throw_id = request.GET.get("throw_id")
-    Throw.objects.filter(id=throw_id).delete()  # 当点击删除按钮后，删除该投放记录
-    records = Throw.objects.all()  # 把当前投放记录查询出来
-    return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
+    if request.method == "GET":
+        throw_id = request.GET.get("id")
+        Throw.objects.filter(id=throw_id).delete()  # 当点击删除按钮后，删除该投放记录
+        records = Throw.objects.all()  # 把当前投放记录查询出来
+        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
 # 修改管理员的密码
 def change_manager_password(request):
     result = User.objects.filter(account=account).first()
