@@ -372,49 +372,36 @@ def alter_dump(request):
             "types": types
         }
         return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾回收点的所有信息
-    else:  # 此部分是当用户在alter_dump.html页面中点击保存按钮后重新更新用户修改后的信息
+    else:  # 此部分是当用户在alter_dump.html页面中点击确认按钮后重新更新用户修改后的信息
         dump_id = request.POST.get("dump_id")
         dump_number = request.POST.get("dump_number")
         dump_place = request.POST.get("dump_place")
         type_name = request.POST.get("type_name")
-        result = Dump.objects.filter(dump_id=dump_id)  # 在垃圾回收表中查询该编号的记录
-        if len(result) == 1:  # 判断该编号是否使用，如果后台存在记录，则说明使用过
-            context = {
+        if dump_number.isdigit():  # 判断输入的垃圾桶数量是否为数字
+            type = Type.objects.filter(type_name=type_name).first()  # 垃圾桶类型是外键
+            Dump.objects.filter(dump_id=dump_id).update(dump_number=dump_number, dump_place=dump_place, dump_type=type)  # 在dump表里更新刚才修改的垃圾回收点信息
+            context = {  # 把修改后的内容显示出来
                 "dump_id": dump_id,
                 "dump_number": dump_number,
                 "dump_place": dump_place,
                 "type_name": type_name,
                 "name": global_mname,
                 "types": types,
-                "status": 0
+                "status": 1
             }
-            return render(request, 'manager/alter_dump.html', context)
-        else:  # 该编号未使用
-            if dump_number.isdigit():  # 判断输入的垃圾桶数量是否为数字
-                type = Type.objects.filter(type_name=type_name).first()  # 垃圾桶类型是外键
-                Dump.objects.filter(dump_id=dump_id).update(dump_number=dump_number, dump_place=dump_place, dump_type=type)  # 在dump表里更新刚才修改的垃圾回收点信息
-                context = {  # 把修改后的内容显示出来
-                    "dump_id": dump_id,
-                    "dump_number": dump_number,
-                    "dump_place": dump_place,
-                    "type_name": type_name,
-                    "name": global_mname,
-                    "types": types,
-                    "status": 1
-                }
-                return render(request, 'manager/alter_dump.html', context)  # 重新向前端传递该垃圾回收点的所有信息
-            else:
-                result = Dump.objects.filter(dump_id=dump_id).first()
-                context = {
-                    "dump_id": result.dump_id,
-                    "dump_number": result.dump_number,
-                    "dump_place": result.dump_place,
-                    "type_name": result.dump_type.type_name,
-                    "name": global_mname,
-                    "types": types,
-                    "status": 2
-                }
-                return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾回收点的所有信息
+            return render(request, 'manager/alter_dump.html', context)  # 重新向前端传递该垃圾回收点的所有信息
+        else:
+            result = Dump.objects.filter(dump_id=dump_id).first()
+            context = {
+                "dump_id": result.dump_id,
+                "dump_number": result.dump_number,
+                "dump_place": result.dump_place,
+                "type_name": result.dump_type.type_name,
+                "name": global_mname,
+                "types": types,
+                "status": 2
+            }
+            return render(request, 'manager/alter_dump.html', context)  # 向前端传递该垃圾回收点的所有信息
 # 添加新垃圾回收点
 def add_new_dump(request):
     types = Type.objects.all()

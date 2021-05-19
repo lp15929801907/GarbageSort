@@ -112,7 +112,7 @@
                     <td>{{ dump.dump_type.type_name }}</td><!--因为垃圾桶类型是dump表的外键，所以需要二级引用-->
                     <td>{{ dump.dump_number }}</td>
                 <td>
-                    <a href="/add_dump?dump_dump_id1={{ dump.dump_id }}"><img src="../../static/img/zengjia.png" alt="添加数量" title="添加数量"/></a>
+                    <a href="/add_dump?dump_dump_id1={{ dump.dump_id }}"><img src="../../static/img/zengjia.png" alt="增加数量" title="增加数量"/></a>
                     <a href="/reduce_dump?dump_dump_id2={{ dump.dump_id }}"><img src="../../static/img/jianshao.jpg" alt="减少数量" title="减少数量"/></a>
                     <a href="/alter_dump?dump_dump_id3={{ dump.dump_id }}"><img src="../../static/img/xiugai.png" alt="修改信息" title="修改信息"/></a>
                     <a href="#" class="removeProvider"onclick="alter({{ dump.dump_id }})"><img src="../../static/img/shanchu.png" alt="删除垃圾回收点" title="删除垃圾回收点"/></a>

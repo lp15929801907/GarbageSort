@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="../../static/css/style.css"/>
 </head>
 <body>
-{% if status == 0 %}
-    <script>
-    alert("该编号已使用！！！")
-    </script>
-{% elif status == 1 %}
+{% if status == 1 %}
     <script>
     alert("修改成功！！！")
     </script>
@@ -60,7 +56,8 @@
                     {% csrf_token %}
                     <div>
                         <label >垃圾回收点编号：</label>
-                        <input type="text" name="dump_id"value="{{ dump_id }}"id="dump_id" required/>
+                        <input type="text" name="dump_id"value="{{ dump_id }}"id="dump_id" readonly/><img src="../../static/img/jinzhixiugai.jpg" style="position: relative;
+    right: 25px;top: 5px;">
                         <label >垃圾回收点位置：</label>
                         <select name="dump_place"id="dump_place" required/>
                         <option value="{{ dump_place }}">{{ dump_place }}</option>
@@ -87,15 +84,15 @@
                             <option value="{{type.type_name}}">{{type.type_name}}</option>
                          {% endfor %}
                         </select>
-                        <label >垃圾桶数量：</label>
+                        <label style="margin-left: 20px">垃圾桶数量：</label>
                         <input type="text" name="dump_number"value="{{ dump_number }}"id="dump_number" required/>
                     </div>
                     <div class="providerAddBtn">
                         <input type="submit"value="确&nbsp;认"style=" width: 88px;
     height: 42px;
     position: absolute;
-    left: 745px;
-    top: 383px;
+    left: 710px;
+    top: 280px;
     font-size: 20px;">
                     </div>
                 </form>
