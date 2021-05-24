@@ -1,4 +1,5 @@
 import datetime
+import re
 from django.shortcuts import render
 # render方法可接收三个参数，一是request参数，二是待渲染的html模板文件,三是保存具体数据的字典参数。它的作用就是将数据填充进模板文件，最后把结果返回给浏览器。
 from MyApp.models import *
@@ -15,50 +16,66 @@ def common_register(request):
     address = request.POST.get("common_address")  # 获取用户输入的地址
     email = request.POST.get("common_email")  # 获取用户输入的邮箱
     telephone = request.POST.get("common_telephone")  # 获取用户输入的手机号
+    ret = re.match(r"^1[35678]\d{9}$", telephone)  # 验证手机号
     password = request.POST.get("common_password")  # 获取用户输入的密码
     result1 = User.objects.filter(account=telephone)  # 在用户表中查询该手机号的记录
     result2 = Common.objects.filter(common_id=id)  # 在普通用户信息表中查询该昵称的记录
     context = {}
-    if len(result1) == 1:  # 判断该手机号是否存在(即判断是否注册过)，如果后台存在记录，则返回相应的提示语句
-        context["info"] = "该手机号已注册！！！"
-        context["status"] = 0  # 零表示注册失败
+    if ret:  # 判断该手机号格式是否正确
+        if len(result1) == 1:  # 判断该手机号是否存在(即判断是否注册过)，如果后台存在记录，则返回相应的提示语句
+            context["info"] = "该手机号已注册！！！"
+            context["status"] = 0  # 零表示注册失败
+            return render(request, 'login.html', context=context)
+        else:  # 该账号是新用户
+            if len(result2) == 1:  # 判断该昵称是否有用户已使用
+                context["info"] = "该昵称已占用！！！"
+                context["status"] = 4
+                return render(request, 'login.html', context=context)
+            else:
+                User.objects.create(account=telephone, user_password=password,
+                                    user_identity='用户')  # 用create为user表添加一条记录
+                Common.objects.create(common_name=name, common_id=id, common_address=address, common_tel=telephone,
+                                      common_email=email)  # 用create为common表添加一条记录
+                context["info"] = "注册成功！"
+                context["status"] = 1  # 1表示注册成功
+                return render(request, 'login.html', context=context)
+    else:
+        context["info"] = "手机号格式错误！！！"
+        context["status"] = 6
         return render(request, 'login.html', context=context)
-    else:  # 该账号是新用户
-        if len(result2) == 1:  # 判断该昵称是否有用户已使用
-            context["info"] = "该昵称已占用！！！"
-            context["status"] = 4
-            return render(request, 'login.html', context=context)
-        else:
-            User.objects.create(account=telephone, user_password=password, user_identity='用户')  # 用create为user表添加一条记录
-            Common.objects.create(common_name=name, common_id=id, common_address=address, common_tel=telephone, common_email=email)  # 用create为common表添加一条记录
-            context["info"] = "注册成功！"
-            context["status"] = 1  # 1表示注册成功
-            return render(request, 'login.html', context=context)
 # 管理员注册
 def manager_register(request):
-    name = request.POST.get("manager_name")  # 获取管理员输入的姓名
     id = request.POST.get("manager_id")  # 获取管理员输入的昵称
-    email = request.POST.get("manager_email")  # 获取管理员输入的邮箱
     telephone = request.POST.get("manager_telephone")  # 获取管理员输入的手机号
-    password = request.POST.get("manager_password")  # 获取管理员输入的密码
+    ret = re.match(r"^1[35678]\d{9}$", telephone)  # 验证手机号
     result1 = User.objects.filter(account=telephone)  # 在用户表中查询该手机号的记录
     result2 = Manager.objects.filter(manager_id=id)  # 在管理员信息表中查询该昵称的使用记录
+    name = request.POST.get("manager_name")  # 获取管理员输入的姓名
+    email = request.POST.get("manager_email")  # 获取管理员输入的邮箱
+    password = request.POST.get("manager_password")  # 获取管理员输入的密码
     context = {}
-    if len(result1) == 1:  # 判断该手机号是否存在(即判断是否注册过)，如果后台存在记录，则返回相应的提示语句
-        context["info"] = "该手机号已注册！！！"
-        context["status"] = 0  # 零表示注册失败
+    if ret:  # 判断该手机号格式是否正确
+        if len(result1) == 1:  # 判断该手机号是否存在(即判断是否注册过)，如果后台存在记录，则返回相应的提示语句
+            context["info"] = "该手机号已注册！！！"
+            context["status"] = 0  # 零表示注册失败
+            return render(request, 'login.html', context=context)
+        else:  # 该账号是新用户
+            if len(result2) == 1:  # 判断该昵称号是否有管理员已使用
+                context["info"] = "该昵称已占用！！！"
+                context["status"] = 5
+                return render(request, 'login.html', context=context)
+            else:
+                User.objects.create(account=telephone, user_password=password,
+                                    user_identity='管理员')  # 用create为user表添加一条记录
+                Manager.objects.create(manager_name=name, manager_id=id, manager_tel=telephone,
+                                       manager_email=email)  # 用create为manager表添加一条记录
+                context["info"] = "注册成功！"
+                context["status"] = 1  # 1表示注册成功
+                return render(request, 'login.html', context=context)
+    else:
+        context["info"] = "手机号格式错误！！！"
+        context["status"] = 6
         return render(request, 'login.html', context=context)
-    else:  # 该账号是新用户
-        if len(result2) == 1:  # 判断该昵称号是否有管理员已使用
-            context["info"] = "该昵称已占用！！！"
-            context["status"] = 5
-            return render(request, 'login.html', context=context)
-        else:
-            User.objects.create(account=telephone, user_password=password, user_identity='管理员')  # 用create为user表添加一条记录
-            Manager.objects.create(manager_name=name, manager_id=id, manager_tel=telephone, manager_email=email)  # 用create为manager表添加一条记录
-            context["info"] = "注册成功！"
-            context["status"] = 1  # 1表示注册成功
-            return render(request, 'login.html', context=context)
 # 登入判定
 def login_judge(request):
     global account, global_cname, global_mname  # 定义全局变量account,存储该用户的账号,global_cname保存普通用户的姓名,global_mname保存管理员的姓名
@@ -221,8 +238,8 @@ def throw_record(request):
 # 分析单用户投放记录数据
 def common_analysis(request):
     record = Throw.objects.filter(common_tel=account)  # 把当前用户所有的投放记录查询出来
-    record1 = Throw.objects.filter(common_tel=account, dump_type="A")  # 把当前用户投放厨余垃圾的记录查询出来
-    record2 = Throw.objects.filter(common_tel=account, dump_type="B")  # 把当前用户投放可回收垃圾的记录查询出来
+    record1 = Throw.objects.filter(common_tel=account, dump_type="A")  # 把当前用户投放可回收垃圾的记录查询出来
+    record2 = Throw.objects.filter(common_tel=account, dump_type="B")  # 把当前用户投放厨余垃圾的记录查询出来
     record3 = Throw.objects.filter(common_tel=account, dump_type="C")  # 把当前用户投放有害垃圾的记录查询出来
     record4 = Throw.objects.filter(common_tel=account, dump_type="D")  # 把当前用户投放其他垃圾的记录查询出来
     count = len(record)
@@ -290,9 +307,10 @@ def manage_common(request):
 def delete_common(request):
     if request.method == "GET":
         common_tel = request.GET.get("common_tel")
-        Common.objects.filter(common_tel=common_tel).delete()  # 当点击删除按钮后，删除该用户
+        Common.objects.filter(common_tel=common_tel).delete()  # 当点击删除按钮后，在common表删除该用户
+        User.objects.filter(account=common_tel).delete()  # 当点击删除按钮后，在user表删除该用户
         commons = Common.objects.all()  # 把所有用户查询出来
-        return render(request, 'manager/manage_common.html', context={"commons": commons, "name": global_mname})
+        return render(request, 'manager/manage_common.html', context={"commons": commons, "status": 2, "name": global_mname})
 # 管理垃圾回收点
 def manage_dump(request):
     if request.method == "GET":  # 此部分是当用户每次点击侧边导航栏的“管理垃圾回收点”选项时，都要显示出所有垃圾回收点资料
@@ -356,7 +374,7 @@ def delete_dump(request):
         Dump.objects.filter(dump_id=dump_id).delete()  # 在dump表里删除该条记录
         dumps = Dump.objects.all()
         types = Type.objects.all()
-        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "name": global_mname})  # 向前端传递所有查找到的垃圾回收点信息的集合
+        return render(request, 'manager/manage_dump.html', context={"dumps": dumps, "types": types, "status": 4, "name": global_mname})  # 向前端传递所有查找到的垃圾回收点信息的集合
 # 修改垃圾回收点详情
 def alter_dump(request):
     types = Type.objects.all()
@@ -463,8 +481,8 @@ def manage_analysis(request):
     if request.method == "GET":
         commons = Common.objects.all()  # 把所有用户查询出来
         records = Throw.objects.all()  # 把所有用户的投放记录查询出来
-        record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
-        record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
+        record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放可回收垃圾的记录查询出来
+        record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放厨余垃圾的记录查询出来
         record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
         record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
         count = len(records)
@@ -572,7 +590,7 @@ def delete_record(request):
         throw_id = request.GET.get("id")
         Throw.objects.filter(id=throw_id).delete()  # 当点击删除按钮后，删除该投放记录
         records = Throw.objects.all()  # 把当前投放记录查询出来
-        return render(request, 'manager/search_record.html', context={"records": records, "name": global_mname})
+        return render(request, 'manager/search_record.html', context={"records": records, "status": 4, "name": global_mname})
 # 修改管理员的密码
 def change_manager_password(request):
     result = User.objects.filter(account=account).first()

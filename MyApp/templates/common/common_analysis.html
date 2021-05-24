@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public1.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+    <script src="../../static/js/echarts-4.7.0.min.js"></script>
+    <style>
+        #main{
+            display:inline-block ;
+            margin-left: 50px;
+            margin-top: 10px;
+        }
+        #main1{
+            display:inline-block ;
+            margin-left: 50px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<!--头部-->
+    <header class="publicHeader">
+        <h1>垃圾分类系统</h1>
+        <div class="publicHeaderR">
+            <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span> , 欢迎你！</p>
+            <a href="/login?">退出</a>
+        </div>
+    </header>
+<!--时间-->
+
+    <section class="publicTime">
+        <span id="time"></span>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
+    </section>
+<!--主体内容-->
+    <section class="publicMian ">
+        <div class="left">
+            <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+            <nav>
+                <ul class="list">
+                    <li><a href="/common_information?">用户个人信息</a></li>
+                    <li><a href="/garbage_type?">查看垃圾类别</a></li>
+                    <li><a href="/search_dump?">查看垃圾回收点</a></li>
+                    <li><a href="/throw_record?">查看投放记录</a></li>
+                    <li><a href="/common_analysis?">数据分析</a></li>
+                    <li><a href="/change_password?">密码修改</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="right">
+            <div class="location">
+                <strong>你现在所在的位置是:</strong>
+                <span>分析用户投放记录数据页面</span>
+            </div>
+            <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+            <div id="main" style="width: 500px;height:400px;"></div>
+            <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '用户投放记录柱状图(总次数：{{ count }})',
+                x: 'center',
+            },
+            tooltip: {},
+            xAxis: {
+                data: ["可回收垃圾","厨余垃圾","有害垃圾","其他垃圾"]
+            },
+            yAxis: {},
+            series: [{
+                name: '次数',
+                type: 'bar',
+                barCategoryGap : '50%',  // 类目间柱形距离，默认为类目间距的20%，可设固定值
+                data: [{{ count1 }},{{ count2 }},{{ count3 }},{{ count4 }}]
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+            <div id="main1" style="width: 500px;height:400px;"></div>
+            <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main1'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '用户投放记录饼状图(总次数：{{ count }})',
+                x: 'center',
+            },
+            tooltip: {},
+            series: [{
+            name: '次数',
+            type: 'pie',
+            radius: '55%',
+            data:[
+                {value:{{ count1 }}, name:'可回收垃圾'},
+                {value:{{ count2 }}, name:'厨余垃圾'},
+                {value:{{ count3 }}, name:'有害垃圾'},
+                {value:{{ count4 }}, name:'其他垃圾'}
+            ],
+            itemStyle: {
+                normal:{
+                        label:{
+                            show: true,
+                            formatter: '{b} : {c} ({d}%)'
+                        },
+                        labelLine :{show:true}
+                    }
+            }
+        }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+    </div>
+    </section>
+<script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/js.js"></script>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>

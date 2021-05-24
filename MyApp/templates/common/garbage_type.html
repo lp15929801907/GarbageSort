@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public1.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+</head>
+<body>
+<!--头部-->
+    <header class="publicHeader">
+        <h1>垃圾分类系统</h1>
+        <div class="publicHeaderR">
+            <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span> , 欢迎你！</p>
+            <a href="/login?">退出</a>
+        </div>
+    </header>
+<!--时间-->
+    <section class="publicTime">
+        <span id="time"></span>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
+    </section>
+<!--主体内容-->
+    <section class="publicMian ">
+        <div class="left">
+            <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+            <nav>
+                <ul class="list">
+                    <li><a href="/common_information?">用户个人信息</a></li>
+                    <li><a href="/garbage_type?">查看垃圾类别</a></li>
+                    <li><a href="/search_dump?">查看垃圾回收点</a></li>
+                    <li><a href="/throw_record?">查看投放记录</a></li>
+                    <li><a href="/common_analysis?">数据分析</a></li>
+                    <li><a href="/change_password?">密码修改</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="right">
+            <div class="location">
+                <strong>你现在所在的位置是:</strong>
+                <span>查看垃圾类别页面</span>
+            </div>
+            <div style="overflow: scroll;height: 604px;">
+            <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1113px;left: 100px;margin-left: -94px;">
+            <tr class="firstTr">
+                <th style="width: 15px;">垃圾类型编号</th>
+                <th style="width: 15px;">垃圾类型</th>
+                <th style="width: 70px;">包含垃圾种类</th>
+            </tr>
+                {% for type in types %}
+                    <tr>
+                    <td>{{ type.type_id }}</td>
+                    <td>{{ type.type_name }}</td>
+                    <td>{{ type.type_kind }}</td>
+                </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+    </footer>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+    <script src="../../static/js/echarts-4.7.0.min.js"></script>
+    <style>
+        #main{
+            {#display:inline-block ;#}
+            margin-left: 50px;
+            margin-top: 10px;
+            float: left;
+        }
+        #main1{
+            {#display:inline-block ;#}
+            margin-left: 50px;
+            margin-top: 10px;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+{% if status == 0 %}
+    <script>
+    alert("未找到该用户的投放记录！！！")
+    </script>
+{% elif status == 1 %}
+    <script>
+    alert("未找到该垃圾回收点的投放记录！！！")
+    </script>
+{% elif status == 2 %}
+    <script>
+    alert("未找到该用户在该垃圾回收点的投放记录！！！")
+    </script>
+{% elif status == 3 %}
+    <script>
+    alert("请选择查询投放记录的条件！！！")
+    </script>
+{% endif %}
+<!--头部-->
+    <header class="publicHeader">
+        <h1>垃圾分类系统</h1>
+        <div class="publicHeaderR">
+            <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span>管理员 , 欢迎你！</p>
+            <a href="/login?">退出</a>
+        </div>
+    </header>
+<!--时间-->
+
+    <section class="publicTime">
+        <span id="time"></span>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
+    </section>
+<!--主体内容-->
+    <section class="publicMian ">
+        <div class="left">
+            <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+            <nav>
+                <ul class="list">
+                <li><a href="/manager_information?">管理员个人信息</a></li>
+                <li><a href="/manage_common?">管理注册用户</a></li>
+                <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
+                <li><a href="/search_record?">查看投放记录</a></li>
+                <li><a href="/manage_analysis?">数据分析</a></li>
+                <li><a href="/change_manager_password?">密码修改</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="right">
+            <div class="location">
+                <strong>你现在所在的位置是:</strong>
+                <span>分析用户投放记录数据页面</span>
+            </div>
+            <form>
+        {% csrf_token %}
+        <div class="search">
+                <span>用户：</span>
+                <select name="common_tel"id="common_tel">
+                    <option value="">--请选择用户--</option>
+                         {% for common in commons %}
+                            <option value="{{common.common_tel}}">{{common.common_tel}}</option>
+                         {% endfor %}
+                </select>
+                <span>垃圾回收点：</span>
+                <select name="dump_place"id="dump_place">
+                        <option value="">--请选择垃圾回收点--</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+                        </select>
+                <input type="submit" value="查询"formaction="/manage_analysis/"formmethod="post"
+                style="width: 70px;height: 37px;position: absolute;left: 770px;top: 115px;"/><!--点击查询按钮后提交到search_record函数的post部分执行 -->
+            </div>
+    </form>
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="width: 500px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '用户投放记录柱状图(总次数：{{ count }})',
+                x: 'center',
+            },
+            tooltip: {},
+            xAxis: {
+                data: ["可回收垃圾","厨余垃圾","有害垃圾","其他垃圾"]
+            },
+            yAxis: {},
+            series: [{
+                name: '次数',
+                type: 'bar',
+                barCategoryGap : '50%',  // 类目间柱形距离，默认为类目间距的20%，可设固定值
+                data: [{{ count1 }},{{ count2 }},{{ count3 }},{{ count4 }}]
+            }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+    <div id="main1" style="width: 500px;height:400px;"></div>
+    <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main1'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '用户投放记录饼状图(总次数：{{ count }})',
+                x: 'center',
+            },
+            tooltip: {},
+            series: [{
+            name: '次数',
+            type: 'pie',
+            radius: '55%',
+            data:[
+                {value:{{ count1 }}, name:'可回收垃圾'},
+                {value:{{ count2 }}, name:'厨余垃圾'},
+                {value:{{ count3 }}, name:'有害垃圾'},
+                {value:{{ count4 }}, name:'其他垃圾'}
+            ],
+            itemStyle: {
+                normal:{
+                        label:{
+                            show: true,
+                            formatter: '{b} : {c} ({d}%)'
+                        },
+                        labelLine :{show:true}
+                    }
+            }
+        }]
+        };
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+    </script>
+    </div>
+    </section>
+<script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/js.js"></script>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>

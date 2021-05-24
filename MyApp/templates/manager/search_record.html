@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>垃圾分类系统</title>
+    <link rel="stylesheet" href="../../static/css/public.css"/>
+    <link rel="stylesheet" href="../../static/css/style.css"/>
+</head>
+<body>
+{% if status == 0 %}
+    <script>
+    alert("未找到该用户的投放记录！！！")
+    </script>
+{% elif status == 1 %}
+    <script>
+    alert("未找到该垃圾回收点的投放记录！！！")
+    </script>
+{% elif status == 2 %}
+    <script>
+    alert("未找到该用户在该垃圾回收点的投放记录！！！")
+    </script>
+{% elif status == 3 %}
+    <script>
+    alert("请选择查询投放记录的条件！！！")
+    </script>
+{% elif status == 4 %}
+    <script>
+    alert("删除成功！")
+    </script>
+{% endif %}
+<!--头部-->
+    <header class="publicHeader">
+        <h1>垃圾分类系统</h1>
+        <div class="publicHeaderR">
+            <p><span id="hours"></span><span style="color: #fff21b"> {{ name }}</span>管理员 , 欢迎你！</p>
+            <a href="/login?">退出</a>
+        </div>
+    </header>
+<!--时间-->
+    <section class="publicTime">
+        <span id="time"></span>
+        <a href="#">温馨提示：为了能正常浏览，请使用Firefox浏览器！</a>
+    </section>
+<!--主体内容-->
+    <section class="publicMian ">
+        <div class="left">
+            <h2 class="leftH2"><span class="span1"></span>功能列表 <span></span></h2>
+            <nav>
+                <ul class="list">
+                <li><a href="/manager_information?">管理员个人信息</a></li>
+                <li><a href="/manage_common?">管理注册用户</a></li>
+                <li><a href="/manage_dump?">管理垃圾回收点</a></li>
+                <li><a href="/add_new_dump?">添加垃圾回收点</a></li>
+                <li><a href="/search_record?">查看投放记录</a></li>
+                <li><a href="/manage_analysis?">数据分析</a></li>
+                <li><a href="/change_manager_password?">密码修改</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="right">
+            <div class="location">
+                <strong>你现在所在的位置是:</strong>
+                <span>投放垃圾记录页面</span>
+            </div>
+        <form>
+        {% csrf_token %}
+        <div class="search">
+                <span>用户：</span>
+                <select name="common_tel"id="common_tel">
+                    <option value="">--请选择用户--</option>
+                         {% for common in commons %}
+                            <option value="{{common.common_tel}}">{{common.common_tel}}</option>
+                         {% endfor %}
+                </select>
+                <span>垃圾回收点：</span>
+                <select name="dump_place"id="dump_place">
+                        <option value="">--请选择垃圾回收点--</option>
+                        <option value="长安区">长安区</option>
+                        <option value="碑林区">碑林区</option>
+                        <option value="雁塔区">雁塔区</option>
+                        <option value="高新区">高新区</option>
+                        <option value="莲湖区">莲湖区</option>
+                        <option value="未央区">未央区</option>
+                        <option value="灞桥区">灞桥区</option>
+                        <option value="新城区">新城区</option>
+                        <option value="临潼区">临潼区</option>
+                        <option value="高陵区">高陵区</option>
+                        <option value="阎良区">阎良区</option>
+                        <option value="鄠邑区">鄠邑区</option>
+                        <option value="西咸新区">西咸新区</option>
+                        </select>
+                <input type="submit" value="查询"formaction="/search_record/"formmethod="post"
+                style="width: 70px;height: 37px;position: absolute;left: 850px;top: 115px;"/><!--点击查询按钮后提交到search_record函数的post部分执行 -->
+            </div>
+    </form>
+         <script>
+        function alter(id) {
+            document.getElementById("ok").value=id
+        }
+    </script>
+            <div style="overflow: scroll;height: 604px;">
+            <table class="providerTable" cellpadding="0" cellspacing="0"style="position: relative;top: 8px;width: 1113px;left: 100px;margin-left: -94px;">
+            <tr class="firstTr">
+                <th style="width: 70px;">用户昵称</th>
+                <th style="width: 70px;">用户手机号</th>
+                <th style="width: 70px;">垃圾回收点编号</th>
+                <th style="width: 70px;">垃圾回收点</th>
+                <th style="width: 70px;">投放垃圾类型</th>
+                <th style="width: 70px;">投放时间</th>
+                <th style="width: 70px;">操作</th>
+            </tr>
+                {% for record in records %}
+                    <tr>
+                    <td>{{ record.common_id }}</td>
+                    <td>{{ record.common_tel }}</td>
+                    <td>{{ record.dump_id }}</td>
+                    <td>{{ record.dump_place }}</td>
+                    <td>{{ record.dump_type.type_name }}</td>
+                    <td>{{ record.throw_time }}</td>
+                <td>
+                    <a href="#" class="removeProvider"onclick="alter({{ record.id }})"><img src="../../static/img/shanchu.png" alt="删除记录" title="删除记录"/></a>
+                </td>
+                </tr>
+                {% endfor %}
+        </table>
+            </div>
+        </div>
+    </section>
+<!--点击删除按钮后弹出的页面-->
+<div class="zhezhao"></div>
+<div class="remove" id="removeProv">
+   <div class="removerChid">
+       <h2>提示</h2>
+       <div class="removeMain" >
+           <form>
+               {% csrf_token %}
+           <p style="font-size: 20px;
+    position: relative;
+    top: -28px;">你确定要删除该条记录吗？</p>
+               <input type="text"id="ok"name="id"style="display: none;">
+               <input type="submit"formaction="/delete_record/"formmethod="get"value="确定"style="position: relative;top: 30px;">
+               <input type="submit"formmethod="get"formaction="/search_record/" value="取消"style="position: relative;top: 30px;">
+           </form>
+       </div>
+   </div>
+</div>
+    <footer class="footer">
+    </footer>
+
+<script src="../../static/js/jquery.js"></script>
+<script src="../../static/js/js.js"></script>
+<script src="../../static/js/time.js"></script>
+
+</body>
+</html>
