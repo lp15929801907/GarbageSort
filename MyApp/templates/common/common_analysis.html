@@ -75,7 +75,7 @@
                 name: '次数',
                 type: 'bar',
                 barCategoryGap : '50%',  // 类目间柱形距离，默认为类目间距的20%，可设固定值
-                data: [{{ count1 }},{{ count2 }},{{ count3 }},{{ count4 }}]
+                data: {{ counts }}
             }]
         };
         // 使用刚指定的配置项和数据显示图表。
@@ -98,16 +98,16 @@
             type: 'pie',
             radius: '55%',
             data:[
-                {value:{{ count1 }}, name:'可回收垃圾'},
-                {value:{{ count2 }}, name:'厨余垃圾'},
-                {value:{{ count3 }}, name:'有害垃圾'},
-                {value:{{ count4 }}, name:'其他垃圾'}
+                {value:{{ counts }}[0], name:'可回收垃圾'},
+                {value:{{ counts }}[1], name:'厨余垃圾'},
+                {value:{{ counts }}[2], name:'有害垃圾'},
+                {value:{{ counts }}[3], name:'其他垃圾'}
             ],
             itemStyle: {
                 normal:{
                         label:{
                             show: true,
-                            formatter: '{b} : {c} ({d}%)'
+                            formatter: '{b} {d}%'
                         },
                         labelLine :{show:true}
                     }
@@ -117,6 +117,9 @@
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     </script>
+            <div style="margin-top: -20px;width: 700px">
+             <p style="font-size: 15px;">该用户共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。</p>
+         </div>
     </div>
     </section>
 <script src="../../static/js/jquery.js"></script>

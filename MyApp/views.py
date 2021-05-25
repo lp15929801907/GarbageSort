@@ -32,10 +32,8 @@ def common_register(request):
                 context["status"] = 4
                 return render(request, 'login.html', context=context)
             else:
-                User.objects.create(account=telephone, user_password=password,
-                                    user_identity='用户')  # 用create为user表添加一条记录
-                Common.objects.create(common_name=name, common_id=id, common_address=address, common_tel=telephone,
-                                      common_email=email)  # 用create为common表添加一条记录
+                User.objects.create(account=telephone, user_password=password, user_identity='用户')  # 用create为user表添加一条记录
+                Common.objects.create(common_name=name, common_id=id, common_address=address, common_tel=telephone, common_email=email)  # 用create为common表添加一条记录
                 context["info"] = "注册成功！"
                 context["status"] = 1  # 1表示注册成功
                 return render(request, 'login.html', context=context)
@@ -237,17 +235,13 @@ def throw_record(request):
             return render(request, 'common/throw_record.html', context={"records": records, "name": global_cname, "status": 3})
 # 分析单用户投放记录数据
 def common_analysis(request):
-    record = Throw.objects.filter(common_tel=account)  # 把当前用户所有的投放记录查询出来
+    records = Throw.objects.filter(common_tel=account)  # 把当前用户所有的投放记录查询出来
     record1 = Throw.objects.filter(common_tel=account, dump_type="A")  # 把当前用户投放可回收垃圾的记录查询出来
     record2 = Throw.objects.filter(common_tel=account, dump_type="B")  # 把当前用户投放厨余垃圾的记录查询出来
     record3 = Throw.objects.filter(common_tel=account, dump_type="C")  # 把当前用户投放有害垃圾的记录查询出来
     record4 = Throw.objects.filter(common_tel=account, dump_type="D")  # 把当前用户投放其他垃圾的记录查询出来
-    count = len(record)
-    count1 = len(record1)
-    count2 = len(record2)
-    count3 = len(record3)
-    count4 = len(record4)
-    return render(request, 'common/common_analysis.html', context={"count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4,  "name": global_cname})
+    data = analysis(records, record1, record2, record3, record4)
+    return render(request, 'common/common_analysis.html', context={"count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_cname})
 # 修改密码
 def change_password(request):
     result = User.objects.filter(account=account).first()
@@ -485,12 +479,8 @@ def manage_analysis(request):
         record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放厨余垃圾的记录查询出来
         record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
         record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
-        count = len(records)
-        count1 = len(record1)
-        count2 = len(record2)
-        count3 = len(record3)
-        count4 = len(record4)
-        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+        data = analysis(records, record1, record2, record3, record4)
+        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname})
     else:  # manager/search_record.html页面中通过post方式的“查询”按钮跳转到此处，即完成查询操作
         commons = Common.objects.all()  # 把所有用户查询出来
         common_tel = request.POST.get("common_tel")
@@ -503,24 +493,16 @@ def manage_analysis(request):
                     record2 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="B")
                     record3 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="C")
                     record4 = Throw.objects.filter(common_tel=common_tel, dump_place=dump_place, dump_type="D")
-                    count = len(records)
-                    count1 = len(record1)
-                    count2 = len(record2)
-                    count3 = len(record3)
-                    count4 = len(record4)
-                    return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+                    data = analysis(records, record1, record2, record3, record4)
+                    return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname})
                 else:  # 若查询的结果集为0，那么输出未找到该用户在该垃圾回收点的投放记录！
                     records = Throw.objects.all()  # 把所有用户的投放记录查询出来
                     record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
                     record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
                     record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
                     record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
-                    count = len(records)
-                    count1 = len(record1)
-                    count2 = len(record2)
-                    count3 = len(record3)
-                    count4 = len(record4)
-                    return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 2})
+                    data = analysis(records, record1, record2, record3, record4)
+                    return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname, "status": 2})
             else:  # 两者中一个不为空
                 if common_tel:  # 如果用户非空，则按用户查找
                     records = Throw.objects.filter(common_tel=common_tel)
@@ -529,24 +511,16 @@ def manage_analysis(request):
                         record2 = Throw.objects.filter(common_tel=common_tel, dump_type="B")
                         record3 = Throw.objects.filter(common_tel=common_tel, dump_type="C")
                         record4 = Throw.objects.filter(common_tel=common_tel, dump_type="D")
-                        count = len(records)
-                        count1 = len(record1)
-                        count2 = len(record2)
-                        count3 = len(record3)
-                        count4 = len(record4)
-                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+                        data = analysis(records, record1, record2, record3, record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname})
                     else:  # 若查询的结果集为0，那么输出未找到该用户的投放记录！
                         records = Throw.objects.all()  # 把所有用户的投放记录查询出来
                         record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
                         record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
                         record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
                         record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
-                        count = len(records)
-                        count1 = len(record1)
-                        count2 = len(record2)
-                        count3 = len(record3)
-                        count4 = len(record4)
-                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 0})
+                        data = analysis(records, record1, record2, record3, record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname, "status": 0})
                 else:  # 如果获取的垃圾回收点输入框内容不为空，则按垃圾回收点查找
                     records = Throw.objects.filter(dump_place=dump_place)
                     if records:  # 如果找到的结果集非空，则输出
@@ -554,36 +528,24 @@ def manage_analysis(request):
                         record2 = Throw.objects.filter(dump_place=dump_place, dump_type="B")
                         record3 = Throw.objects.filter(dump_place=dump_place, dump_type="C")
                         record4 = Throw.objects.filter(dump_place=dump_place, dump_type="D")
-                        count = len(records)
-                        count1 = len(record1)
-                        count2 = len(record2)
-                        count3 = len(record3)
-                        count4 = len(record4)
-                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname})
+                        data = analysis(records, record1, record2, record3, record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname})
                     else:  # 若查询的结果集为0，那么输出未找到该垃圾回收点的投放记录！
                         records = Throw.objects.all()  # 把所有用户的投放记录查询出来
                         record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
                         record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
                         record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
                         record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
-                        count = len(records)
-                        count1 = len(record1)
-                        count2 = len(record2)
-                        count3 = len(record3)
-                        count4 = len(record4)
-                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 1})
+                        data = analysis(records, record1, record2, record3, record4)
+                        return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname, "status": 1})
         else:  # 两者都为空
             records = Throw.objects.all()  # 把所有用户的投放记录查询出来
             record1 = Throw.objects.filter(dump_type="A")  # 把所有用户投放厨余垃圾的记录查询出来
             record2 = Throw.objects.filter(dump_type="B")  # 把所有用户投放可回收垃圾的记录查询出来
             record3 = Throw.objects.filter(dump_type="C")  # 把所有用户投放有害垃圾的记录查询出来
             record4 = Throw.objects.filter(dump_type="D")  # 把所有用户投放其他垃圾的记录查询出来
-            count = len(records)
-            count1 = len(record1)
-            count2 = len(record2)
-            count3 = len(record3)
-            count4 = len(record4)
-            return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": count, "count1": count1, "count2": count2, "count3": count3, "count4": count4, "name": global_mname, "status": 3})
+            data = analysis(records, record1, record2, record3, record4)
+            return render(request, 'manager/manage_analysis.html', context={"commons": commons, "count": data[0], "counts": data[1], "type1": data[2], "Max": data[3], "type2": data[4], "Min": data[5], "name": global_mname, "status": 3})
 # 删除投放记录
 def delete_record(request):
     if request.method == "GET":
@@ -605,3 +567,17 @@ def change_manager_password(request):
             User.objects.filter(account=account).update(user_password=newPassword)  # 更新该用户的密码
             password = newPassword
         return render(request, 'manager/change_manager_password.html', context={"password": password, "name": global_mname})
+def analysis(records, record1, record2, record3, record4):
+    type1 = ''
+    type2 = ''
+    count = len(records)
+    counts = [len(record1), len(record2), len(record3), len(record4)]
+    Max = max(counts)
+    Min = min(counts)
+    types = ["可回收垃圾", "厨余垃圾", "有害垃圾", "其他垃圾"]
+    for i, j in enumerate(counts):
+        if j == Max:
+            type1 = type1 + types[i]
+        if j == Min:
+            type2 = type2 + types[i]
+    return count, counts, type1, Max, type2, Min
