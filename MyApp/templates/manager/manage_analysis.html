@@ -86,18 +86,12 @@
                 <select name="dump_place"id="dump_place">
                         <option value="">--请选择垃圾回收点--</option>
                         <option value="长安区">长安区</option>
-                        <option value="碑林区">碑林区</option>
                         <option value="雁塔区">雁塔区</option>
-                        <option value="高新区">高新区</option>
+                        <option value="碑林区">碑林区</option>
                         <option value="莲湖区">莲湖区</option>
+                        <option value="新城区">新城区</option>
                         <option value="未央区">未央区</option>
                         <option value="灞桥区">灞桥区</option>
-                        <option value="新城区">新城区</option>
-                        <option value="临潼区">临潼区</option>
-                        <option value="高陵区">高陵区</option>
-                        <option value="阎良区">阎良区</option>
-                        <option value="鄠邑区">鄠邑区</option>
-                        <option value="西咸新区">西咸新区</option>
                         </select>
                 <input type="submit" value="查询"formaction="/manage_analysis/"formmethod="post"
                 style="width: 70px;height: 37px;position: absolute;left: 770px;top: 115px;"/><!--点击查询按钮后提交到search_record函数的post部分执行 -->
@@ -112,7 +106,7 @@
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: '用户投放记录柱状图(总次数：{{ count }})',
+                text: '投放记录柱状图(总次数：{{ count }})',
                 x: 'center',
             },
             tooltip: {},
@@ -138,7 +132,7 @@
         // 指定图表的配置项和数据
         var option = {
             title: {
-                text: '用户投放记录饼状图(总次数：{{ count }})',
+                text: '投放记录饼状图(总次数：{{ count }})',
                 x: 'center',
             },
             tooltip: {},
@@ -166,9 +160,26 @@
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     </script>
-         <div style="margin-top: -20px;width: 700px">
-             <p style="font-size: 15px;">该用户共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。</p>
-         </div>
+    <div style="margin-top: -20px;width: 700px;font-size: 15px">
+    <script type="text/javascript">
+                 switch({{ num }}) {
+                    case 1:
+                        document.write('系统所有用户共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。')
+                        break;
+                    case 2:
+                        document.write('用户 {{ common_tel }} 在 {{ dump_place }} 垃圾回收点共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。')
+                        break;
+                    case 3:
+                        document.write('用户 {{ common_tel }} 共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。')
+                        break;
+                    case 4:
+                        document.write(' {{ dump_place }} 垃圾回收点共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。')
+                        break;
+                    default:
+                        break;
+                 }
+    </script>
+    </div>
     </div>
     </section>
 <script src="../../static/js/jquery.js"></script>
