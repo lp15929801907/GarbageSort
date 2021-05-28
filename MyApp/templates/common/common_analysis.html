@@ -20,6 +20,15 @@
     </style>
 </head>
 <body>
+{% if status == 0 %}
+    <script>
+    alert("请同时输入年份和月份！！！")
+    </script>
+{% elif status == 1 %}
+    <script>
+    alert("未找到用户该月份的投放记录！！！")
+    </script>
+{% endif %}
 <!--头部-->
     <header class="publicHeader">
         <h1>垃圾分类系统</h1>
@@ -54,6 +63,35 @@
                 <strong>你现在所在的位置是:</strong>
                 <span>分析用户投放记录数据页面</span>
             </div>
+            <form>
+        {% csrf_token %}
+        <div class="search">
+                <span>年份：</span>
+                <select name="common_year"id="common_year">
+                    <option value="">--请选择年份--</option>
+                    <option value="2020">2020年</option>
+                    <option value="2021">2021年</option>
+                </select>
+                <span>月份：</span>
+                <select name="common_month"id="common_month">
+                    <option value="">--请选择月份--</option>
+                    <option value="01">1月份</option>
+                    <option value="02">2月份</option>
+                    <option value="03">3月份</option>
+                    <option value="04">4月份</option>
+                    <option value="05">5月份</option>
+                    <option value="06">6月份</option>
+                    <option value="07">7月份</option>
+                    <option value="08">8月份</option>
+                    <option value="09">9月份</option>
+                    <option value="10">10月份</option>
+                    <option value="11">11月份</option>
+                    <option value="12">12月份</option>
+                </select>
+                <input type="submit" value="查询"formaction="/common_analysis/"formmethod="post"
+                style="width: 70px;height: 37px;position: absolute;left: 770px;top: 115px;"/><!--点击查询按钮后提交到search_record函数的post部分执行 -->
+            </div>
+    </form>
             <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
             <div id="main" style="width: 500px;height:400px;"></div>
             <script type="text/javascript">
@@ -117,13 +155,20 @@
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(option);
     </script>
-            <div style="margin-top: -20px;width: 700px">
-             <p style="font-size: 15px;">
-                 <br>该用户共投放了 {{ count }} 次垃圾。<br/>
-                 投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；
-                 <br>投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。<br/>
-             </p>
-         </div>
+    <div style="margin-top: -20px;width: 700px;font-size: 15px">
+    <script type="text/javascript">
+                 switch({{ num }}) {
+                    case 1:
+                        document.write('该用户共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。')
+                        break;
+                    case 2:
+                        document.write('该用户在 {{ time }} 月份共投放了 {{ count }} 次垃圾。投放最多的是： {{ type1 }} ，投了 {{ Max }} 次；投放最少的是： {{ type2 }} ，投了 {{ Min }} 次。')
+                        break;
+                    default:
+                        break;
+                 }
+    </script>
+    </div>
     </div>
     </section>
 <script src="../../static/js/jquery.js"></script>
