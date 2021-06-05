@@ -25,9 +25,9 @@ class Manager(models.Model):  # 管理员信息表
     manager_email = models.CharField(max_length=50)  # 邮箱
 
 
-class Type(models.Model):  # 垃圾桶类型表
-    type_id = models.CharField(max_length=20, primary_key=True)  # 垃圾桶类型编号，主键
-    type_name = models.CharField(max_length=20)  # 垃圾桶类型名称
+class Type(models.Model):  # 垃圾类型表
+    type_id = models.CharField(max_length=20, primary_key=True)  # 垃圾类型编号，主键
+    type_name = models.CharField(max_length=20)  # 垃圾类型名称
     type_kind = models.CharField(max_length=1000)  # 垃圾种类
 
 
